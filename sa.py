@@ -41,25 +41,25 @@ from lib import *
 from models import *
 from optimize import *
 
-def sa(about=Schaffer):
-  model = None
+def sa(klass=Schaffer):
+  summary = None
   def maybe(old,new,t):
     return math.e**((old - new)*1.0/t) < rand(); ###
-  def baseline(model):
+  def baseline(summary):
     for _ in xrange(The.sa.baseline):
-      model.instance()
+      summary.instance()
   def energy(lst):
-    return fromHell(model,lst)
+    return fromHell(summary,lst)
   def neighbor(old):
     new = old[:]
-    for num in model.num:
+    for num in summary.num:
       if rand() > The.sa.p:
         new[header.col] = any(num.lo,num.hi)
-    if not model.ok(new):
+    if not summary.ok(new):
       return old
     else:
-      new = model.score(new)
-      model.seen(new)
+      new = summary.score(new)
+      summary.seen(new)
       return new
   def report():
     for k in sorted(history.keys()):
@@ -67,11 +67,11 @@ def sa(about=Schaffer):
   kmax    = The.sa.max
   history = {}  ##
   for _ in xrange(The.optimize.repeats): ##
-    model = about()
-    baseline(model) # initialize 
-    sb = s = model.instance()
+    summary = klass()
+    baseline(summary) # initialize 
+    sb = s = summary.instance()
     eb = e = energy(s)
-    for k,log in Watch(kmax,about,history): ##
+    for k,log in Watch(kmax,klass,history): ##
       sn = neighbor(s)
       en = energy(sn)
       if en > eb:

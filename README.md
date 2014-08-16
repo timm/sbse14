@@ -309,3 +309,51 @@ MaxSmarter
 Never show users something minimizing something. This
 is America! Always maximize!
 
+Klass to Summary to Example
+---------------------------
+
+At its core, my MOEAs manipulate a table of data:
+
++ Each column of that table is a feature and each row is one
+  example.
++ The _i-th_ cell of each example
+  is the _i-th_ _value_ of the _i-th feature
+
+Internally, the features divide into:
+
++ Dependent features  (aka _depen_) we are trying to minimize or mazimize
+  (internally, these are known as the  _less_ and the _more_, respectively).
++ Independent (aka _indep_) features we can control;
+		
+Our meta-knowledge of those examples is kept in a
+high-level _summary_.  So if we make 1000 examples,
+where each list is a example of size 5, then there
+exists *one* _summary_ that is a list of size 5 (and the _i-th_ summary
+refers to the _i-th_ value in all the examples).
+
+The lifecycle of example is:
+
+1. At design time, we build a _klass_ that defines how to generate a _summary_.
+2. At runtime, we start by using that _klass_ to build a particular _summary_.
+3. From that particular_summary_, we generate  independent values;
+      + And, at this stage, all the dependent values are null.
+4. Optionally, we can use those independent values to compute the dependent values.
+5. Optionally, we can  add those values to a synopsis of values
+   seen so far.
+
+So, in this framework, a model is some _klass_ that can
+initializes a _summary_ .
+Each item in the _summary_ knows about
+
++ what values that *might* be added to an example;
++ what values that *were* found in the examples.
+
+Using that knowledge, a _summary_  can:
+
+- _Guess_ possible values for the variables in a example;
+- Check if a new example is _ok_; i.e. is valid;
+- _Score_ a example; i.e. using a list's independent variables,
+  it can set the dependent variables.
+- _Record_ a example's content; i.e. incrementally update counters
+  in the summary showing what values were found in the examples.
+  

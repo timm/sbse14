@@ -41,12 +41,12 @@ import sys,re,random,math
 sys.dont_write_bytecode = True
 from lib import *
 
-def study(about, repeats=The.optimize.repeats, 
+def study(klass, repeats=The.optimize.repeats, 
           reset=noop, run=noop,report=noop,):
   logs = {}                #use same log on all runs
   for _ in xrange(repeats): #repeat for a few times
     reset()                # reset optimzer
-    watch=Watch(about,logs)
+    watch=Watch(klass,logs)
     for tick in watch:
       run(tick,watch)  
   report(logs) # report results in all repeats
@@ -64,24 +64,24 @@ def binaryDomination(goods,bads):
     if good.mu < bad.mu : return False
   return better > 0
  
-def fromHell(about,lst):
+def fromHell(klass,lst):
   "Euclidean distance from worst goal; a.k.a. hell"
   scores = n = 0 
   normed = lambda z: z.norm(lst[z.col])
-  for x in about.less:
+  for x in klass.less:
     n += 1
     scores += (1 - normed(x))**2
-  for x in about.more:
+  for x in klass.more:
     n += 1
     scores += normed(x)**2
   return div(scores**0.5, n**0.5)
             
 class Watch(object):
   def __iter__(i): return i
-  def __init__(i,most,about,logs=None,earlyStop=True):
+  def __init__(i,most,klass,logs=None,earlyStop=True):
     i.logs = logs or {}
     i.thisLog  = {}
-    i.most, i.about,i.earlyStop = most,about,earlyStop
+    i.most, i.klass,i.earlyStop = most,klass,earlyStop
     i.step, i.era  = 0, 0
   def record(i,result):
     """ Each recorded result is one clock tick.
@@ -89,7 +89,7 @@ class Watch(object):
     both = [i.logs, i.thisLog]     
     for log in both:
       if not i.era in log:
-        log[i.era] = i.about()
+        log[i.era] = i.klass()
     i.step += 1
     for log in both:
       log[i.era].seen(result)

@@ -47,7 +47,7 @@ doors to people who, otherwise, might not care
 to. Once inside those doors, I earned a living
 configuring (adding the special sauce) those the
 open tools since, for the tools I created, I was one
-of the few people who really knew the little tweaks
+of the few people who really understoof the crucial tweaks
 that make all the difference.
 
 SHOW OFF:
@@ -82,7 +82,7 @@ PYTHON RULES
 Use Python 2.7+, not Python 3, since many useful
 libraries are NOT yet ported to Python 3. 
 
-Note: this rule will hopefully change, soon.
+Hopefully,  this rule will soon change.
  
 ATMC: Add the missing code.
 ---------------------------
@@ -127,8 +127,14 @@ LRU: Lambdas are us
 
 Anonymous functions (lambdas) rule. Allows for simple
 implementation of generics, just by passing in a lambda
-body.
+body. And stuff like the following is just wicked cool:
 
+    tree = lambda: collections.defaultdict(tree)
+    root = tree()
+    root['menu']['id'] = 'file'
+    root['menu']['value'] = 'File'
+    root['menu']['menuitems']['new']['value'] = 'New'
+    root['menu']['menuitems']['new']['onclick'] = 'new();'
 
 NO W: No Wraps
 ---------------
@@ -317,7 +323,7 @@ At its core, my MOEAs manipulate a table of data:
 + Each column of that table is a feature and each row is one
   example.
 + The _i-th_ cell of each example
-  is the _i-th_ _value_ of the _i-th feature
+  is the _i-th_ _value_ of the _i-th_ feature
 
 Internally, the features divide into:
 
@@ -326,23 +332,7 @@ Internally, the features divide into:
 + Independent (aka _indep_) features we can control;
 		
 Our meta-knowledge of those examples is kept in a
-high-level _summary_.  So if we make 1000 examples,
-where each list is a example of size 5, then there
-exists *one* _summary_ that is a list of size 5 (and the _i-th_ summary
-refers to the _i-th_ value in all the examples).
-
-The lifecycle of example is:
-
-1. At design time, we build a _klass_ that defines how to generate a _summary_.
-2. At runtime, we start by using that _klass_ to build a particular _summary_.
-3. From that particular_summary_, we generate  independent values;
-      + And, at this stage, all the dependent values are null.
-4. Optionally, we can use those independent values to compute the dependent values.
-5. Optionally, we can  add those values to a synopsis of values
-   seen so far.
-
-So, in this framework, a model is some _klass_ that can
-initializes a _summary_ .
+high-level _summary_.  
 Each item in the _summary_ knows about
 
 + what values that *might* be added to an example;
@@ -356,4 +346,24 @@ Using that knowledge, a _summary_  can:
   it can set the dependent variables.
 - _Record_ a example's content; i.e. incrementally update counters
   in the summary showing what values were found in the examples.
+
+Note that there is one summary per feature.
+So if we make 1000 examples,
+where each list is a example of size 5, then there
+exists *one* _summary_ that is a list of size 5 (and the _i-th_ summary
+refers to the _i-th_ value in all the examples).
+
+The lifecycle of example is:
+
+1. At design time, we build a _klass_ that defines how to generate a _summary_.
+2. At runtime, we start by using that _klass_ to build a particular _summary_.
+3. From that particular _summary_, we generate  independent values;
+      + And, at this stage, all the dependent values are null.
+4. Optionally, we can use those independent values to compute the dependent values.
+      + Note it is invalid to guess dependent variables since these
+	    should be computed from the independent variables.
+5. Optionally, we can  add those values to a synopsis of values
+   seen so far.
+
+
   

@@ -108,7 +108,7 @@ with an argument that defaults to, say, an empty
 list will always be talking to the *same* list,
 every time you call the function.
 
-IRU: Iterators are us
+IRU: Iterators 'r us
 ---------------------
 
 Don't understand the following? Then work it out!
@@ -122,7 +122,7 @@ Don't understand the following? Then work it out!
         yield items
 
 
-LRU: Lambdas are us
+LRU: Lambdas 'r us
 -------------------
 
 Anonymous functions (lambdas) rule. Allows for simple
@@ -139,10 +139,15 @@ body. And stuff like the following is just wicked cool:
 NO W: No Wraps
 ---------------
 
-All code <= 52 characters. Not "self" but
-"i". Indents using 2 spaces. Try to keep
-functions, classes, under 60 lines (and much less
-is much better).
+Sooner or later, your code will be added to some print out,
+perhaps even in a two-column format. When it does, you still
+want it to look beautiful. So:
+
++ All code <= 52 characters. 
++ Not "self" but "i". 
++ Indents using 2 spaces. 
++ Try to keep functions, classes, under 60 lines 
+  (and much less is much better).
 
 STACK OVERFLOW
 ---------------

@@ -82,7 +82,7 @@ class Watch(object):
     i.logs = logs or {}
     i.thisLog  = {}
     i.most, i.klass,i.earlyStop = most,klass,earlyStop
-    i.step, i.era  = 0, 0
+    i.step, i.era  = 1, 1
   def record(i,result):
     """ Each recorded result is one clock tick.
         Record all results in both  logs"""
@@ -92,84 +92,26 @@ class Watch(object):
         log[i.era] = i.klass()
     i.step += 1
     for log in both:
-      log[i.era].seen(result)
+      log[i.era].record(result)
   def stop(i):
     """if more than two eras, suggest
        stopping if no improvement."""
     if len(i.thisLog) > 1:
       now = i.era
-      before = now - The.sa.era
+      before = now - The.optimize.era
       if The.optimize.noImprovement(
                            i.thisLog[now],
-                           i.thisLog[then]):
+                           i.thisLog[before]):
         return True
     return False
   def next(i):
     "return next time tick, unless we need to halt."
     if i.step > i.most: # end of run!
-      return StopIteration()
+      raise StopIteration()
     if i.step >= i.era:     # pause to reflect
-      if i.earlyStop():     # maybe exit early
+      if i.earlyStop:     # maybe exit early
         if i.stop():        
-           return StopIteration()
-      i.era += The.sa.era   # set next pause point
+           raise StopIteration()
+      i.era += The.optimize.era   # set next pause point
     return i.step,i
 
-# def watch(report=f):
-#   k = knext = 0
-#   while k < (kmax):
-#     k += 1
-#     if k >= knext:
-#       knext +=  The.sa.era 
-#     log = Num()
-#     logs = [log]+ logs
-#     yield k,log,logs
-#     if len(log) > 1:
-#       if log[0].same(log[1]):
-#         break
-#   report(logs)
- 
-# def sa(model=Schaffer, p=The.sa.p, kmax=The.sa.kmax,
-#        epsilon=The.sa.epsilon, seed=The.
-#        runs=The.sa.runs,
-#        stagger=The.sa.stagger): 
-#   "Simulated annealing."
-#   def baseline(): 
-#     for _ in range(100): m.guess() 
-#   def maybe(old,new,t): 
-#     return math.e**((old - new)*1.0/max(1,t)) < rand()
-#   def neighbor(lst):
-#     for h in m.t.nums:
-#       if rand() < p:
-#         lst[h.pos] = any(h.lo,h.hi)
-#     if m.valid(lst):
-#       return m.seen(lst)
-#     else:
-#       return lst
-#   def logs(lst=[]):
-#     return  [Num()] + lst
-  
-#   #--------------------
-  
-#   rseed(seed)
-#   for k,log, in xrange(kmax):
-#     log = 
-#     say('.')
-#     m   = model()
-#     baseline()
-#     sb  = s = m.any()
-#     eb  = e = fromhell(s, m.t)
-#     for k,inner in do(range(kmax),
-#                       epsilon,"best",era,also=outer):
-#       sn = neighbor(s[:])
-#       en = fromhell(sn,m.t)
-#       if en > eb: 
-#         sb,eb = sn,en
-#       if en > e:
-#         s,e = sn,en
-#       elif maybe(e, en, k*1.0/kmax**stagger) :
-#         s,e = sn,en
-#       inner.seen(k, best=eb, every=e)
-#   done(outer, 0,1,
-#        key   = lambda z: '%2d'   % z,
-#        value = lambda z: '%4.2f' % z)

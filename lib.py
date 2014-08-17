@@ -79,7 +79,8 @@ def shuffle(lst) :
   random.shuffle(lst)
   return lst
 
-def rseed(n=The.math.seed):
+def rseed(n=None):
+  n = n or The.math.seed
   random.seed(n)
 
 rand = random.random

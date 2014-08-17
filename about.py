@@ -44,8 +44,6 @@ Bout
 |-- About
 |-- |-- Schaffer
 |-- About1
-|-- |-- Id
-|-- |-- Fixed
 |-- |-- Sym
 |-- |-- Num
 """             
@@ -65,7 +63,7 @@ class About(Bout):
     for col,header in enumerate(lst): 
       header.col = col
       i.where[header.name] = header
-      i.name += [header.name]
+      i.names += [header.name]
       for pattern,val in The.sym.patterns.items():
         if re.search(pattern,header.name):
           val(i).append(header)
@@ -76,12 +74,13 @@ class About(Bout):
   #    what = Num if numc in one.name else Sym
    #   out += [what(name=one.name)]
     #return About(out)
-  def seen(i,lst):
+  def record(i,lst):
     for header,item in zip(i.about,lst):
       if not item == None:
-        header.seen(item)
+        header.record(item)
+    return lst
   def ok(i,lst):
-    for about,x in zip(i.about(),lst):
+    for about,x in zip(i.about,lst):
       if not about.ok(x):
         return False
     return True
@@ -91,10 +90,10 @@ class About(Bout):
       lst[header.col] = header.guess(old)
     return lst
   def score(i,lst): return lst
-  def instance(i):
-    lst = i.score(i.guess())
-    i.seen(lst)
-    return lst
+  def example(i):
+    return i.record(
+             i.score(
+               i.guess()))
   def set(i,name,lst, val):
     lst[i.where[name].col] = val
     return val
@@ -135,6 +134,7 @@ class Num(About1):
   def __lt__(i,j): 
     "Sorting function."
     return i.mu < j.mu
+  def record(i,x): i += x
   def __iadd__(i,x): i.inc(x); return i
   def __isub__(i,x): i.sub(x); return i
   def inc(i,x):
@@ -163,7 +163,7 @@ class Num(About1):
     "Difference in means, adjusted for sd."
     signal = abs(i.mu - j.mu)
     noise  = (i.sd()**2/i.n + j.sd()**2/j.n)**0.5
-    return signal / noise
+    return div(signal,  noise)
   def same(i,j,
            conf=The.brink.tconf,
            threshold={.95:((  1, 12.70 ),( 3, 3.182),

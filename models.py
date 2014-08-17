@@ -53,20 +53,37 @@ class Schaffer(Model):
     return lst
     
 def _schaffered1():
-  m= Schaffer()
-  print "\n:about", m.about
-  print "\n:indep", m.indep
-  print "\n:depen", m.depen
+  summary = Schaffer()
+  _schaffered0(summary)
+
+def _schaffered0(summary):
+  def show(txt,lst):
+    print txt
+    for one in lst: print "\t",one
+  show(":about",summary.about)
+  show(":indep",summary.indep)
+  show(":depen",summary.depen)
   
 def _schaffered2(seed=1):
   rseed(seed)
-  about = Schaffer()
-  out = []
+  summary = Schaffer()
+  tbl = []
   for _ in range(10):
-    data = about.guess()
-    about.score(data)
-    out += [data]
-  for one in sorted(out):
+    eg = summary.guess()
+    summary.score(eg)
+    tbl += [eg]
+  for one in sorted(tbl):
     print one
+
+def _schaffered3(seed=1):
+  rseed(seed)
+  summary = Schaffer()
+  for _ in range(10):
+    eg = summary.guess()
+    summary.score(eg)
+    summary.record(eg)
+    print eg
+  nl()
+  _schaffered0(summary)
 
 if __name__ == "__main__": eval(cmd())

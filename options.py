@@ -113,20 +113,25 @@ def symings():
       '^[^=<>].*[^!]$': indep,
       '.'             : about})
 
+
 @settings
 def optimizeings():
   def noImprovementBin(betters,worses):
-    return not binaryDomination(betters,worses)
+    import optimize as o
+    return not o.binaryDomination(betters,
+                                  worses)
   return Thing(epsilon = 0.01,
-               era     = 30,
+               era     = 100,
                runs    = 50,
-               repeats = 10,
+               repeats = 1,
                noImprovement= noImprovementBin)
 
 @settings
 def saings():
   return Thing(p       = 0.33,
                stagger = 1.0,
-               baseline = 100)
+               baseline = 100,
+               max = 1000,
+               verbose=True)
 
 if __name__ == "__main__": print The

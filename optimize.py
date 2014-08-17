@@ -37,19 +37,19 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.""" 
 
 from __future__ import division
-import sys,re,random,math
+import sys,re,random,math,datetime
 sys.dont_write_bytecode = True
 from lib import *
 
-def study(klass, repeats=The.optimize.repeats, 
-          reset=noop, run=noop,report=noop,):
-  logs = {}                #use same log on all runs
-  for _ in xrange(repeats): #repeat for a few times
-    reset()                # reset optimzer
-    watch=Watch(klass,logs)
-    for tick in watch:
-      run(tick,watch)  
-  report(logs) # report results in all repeats
+# def study(klass, repeats=The.optimize.repeats, 
+#           reset=noop, run=noop,report=noop,):
+#   logs = {}                #use same log on all runs
+#   for _ in xrange(repeats): #repeat for a few times
+#     reset()                # reset optimzer
+#     watch=Watch(klass,logs)
+#     for tick in watch:
+#       run(tick,watch)  
+#   report(logs) # report results in all repeats
 
 def binaryDomination(goods,bads):
   "checks that at least one better, and no worse"
@@ -78,16 +78,16 @@ def fromHell(klass,lst):
             
 class Watch(object):
   def __iter__(i): return i
-  def __init__(i,most,klass,logs=None):
+  def __init__(i,most,klass,history=None):
     i.early = The.optimize.early  
-    i.logs = logs or {}
-    i.thisLog  = {}
+    i.history = {} if history == None else history
+    i.log  = {}
     i.most, i.klass = most,klass
-    i.step, i.era  = 1, 1
+    i.step, i.era  = 1,1
   def record(i,result):
     """ Each recorded result is one clock tick.
-        Record all results in both  logs"""
-    both = [i.logs, i.thisLog]     
+        Record all results in log and history"""
+    both = [i.history, i.log]     
     for log in both:
       if not i.era in log:
         log[i.era] = i.klass()
@@ -97,12 +97,12 @@ class Watch(object):
   def stop(i):
     """if more than two eras, suggest
        stopping if no improvement."""
-    if len(i.thisLog) > 1:
+    if len(i.log) >= The.optimize.early:
       now = i.era
       before = now - The.optimize.era
       if The.optimize.noImprovement(
-                           i.thisLog[now],
-                           i.thisLog[before]):
+                           i.log[now],
+                           i.log[before]):
         return True
     return False
   def next(i):
@@ -110,7 +110,7 @@ class Watch(object):
     if i.step > i.most: # end of run!
       raise StopIteration()
     if i.step >= i.era:     # pause to reflect
-      if i.early:     # maybe exit early
+      if i.early > 0:     # maybe exit early
         if i.stop():        
            raise StopIteration()
       i.era += The.optimize.era   # set next pause point

@@ -35,7 +35,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.""" 
 
 from __future__ import division
-import sys,re,random,math
+import sys,re,random,math,datetime,re,time
 sys.dont_write_bytecode = True
 from life import *
 from options import *
@@ -90,12 +90,20 @@ def any(x,y):
 ### Interation #####################################
 
 def item(items):
+  "return all items in a nested list"
   if isinstance(items,(list,tuple)):
     for one in items:
       for x in item(one):
         yield x
   else:
     yield items
+
+def pairs(lst):
+  "Return all pairs of items i,i+1 from a list."
+  last=lst[0]
+  for i in lst[1:]:
+    yield last,i
+    last = i
 
 ### Printing #######################################
 def nl(): print ""
@@ -130,6 +138,48 @@ def say(x):
   sys.stdout.write(str(x)); sys.stdout.flush()
 
 
+
+### xtiles #################################
+
+### xtile: Pretty Print  Distributions
+
+
+def xtile(lst,lo=0,hi=100,width=50,
+             chops=[0.1 ,0.3,0.5,0.7,0.9],
+             marks=["-" ," "," ","-"," "],
+             bar="|",star="*",show=" %3.0f"):
+  """The function _xtile_ takes a list of (possibly)
+  unsorted numbers and presents them as a horizontal
+  xtile chart (in ascii format). The default is a 
+  contracted _quintile_ that shows the 
+  10,30,50,70,90 breaks in the data (but this can be 
+  changed- see the optional flags of the function).
+  """
+  def pos(p)   : return ordered[int(len(lst)*p)]
+  def place(x) : 
+    return int(width*float((x - lo))/(hi - lo))
+  def pretty(lst) : 
+    return ', '.join([show % x for x in lst])
+  ordered = sorted(lst)
+  lo      = min(lo,ordered[0])
+  hi      = max(hi,ordered[-1])
+  what    = [pos(p)   for p in chops]
+  where   = [place(n) for n in  what]
+  out     = [" "] * width
+  for one,two in pairs(where):
+    for i in range(one,two): 
+      out[i] = marks[0]
+    marks = marks[1:]
+  out[int(width/2)]    = bar
+  out[place(pos(0.5))] = star 
+  return ''.join(out) +  "," +  pretty(what)
+
+def _tileX() :
+  import random
+  random.seed(1)
+  nums = [random.random()**2 for _ in range(100)]
+  print xtile(nums,lo=0,hi=1.0,width=25,show=" %3.2f")
+
   
 ### Misc stuff #############################
 
@@ -154,6 +204,28 @@ def intrapolate(x, points):
       return y1 + deltay * deltax
     x1,y1 = x2,y2
   return hi[1]
+
+### experiments for header ########################
+
+def study(f):
+  """All outputs have date,time, notes,
+  a reset of the options,  settings, runtimes."""
+  def wrapper():
+    what = f.__name__
+    doc  = f.__doc__ 
+    if doc:
+      doc= re.sub(r"\n[ \t]*","\n# ",doc)
+    show = datetime.datetime.now().strftime
+    print "\n###",what,"################################"
+    print "#", show("%Y-%m-%d %H:%M:%S"),"\n"
+    if doc: print "#",doc
+    settings()
+    t1 = time.time()
+    print "\n",The
+    f()
+    t2 = time.time()   
+    print "# Runtime: %.3f secs" % (t2-t1)
+  return wrapper
 
 ### Coercion  #####################################
 def atom(x):

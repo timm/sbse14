@@ -75,28 +75,62 @@ def sa(klass=Schaffer):
     baseline() # initialize 
     sb = s = meta.example()
     eb = e = energy(s)
-    print "EB0>",num(eb),map(g3,sb)
+    burp(num(eb) + " ") 
     for k,log in Watch(kmax,klass,history): ##
       burp(".")
       sn = neighbor(s)
       en = energy(sn)
-      if en > eb: 
+      if en > eb + The.optimize.epsilon : 
         sb,eb = sn,en;  burp("!")
-      if en > e : 
+      if en > e + The.optimize.epsilon : 
         s,e = sn,en; burp("+")
       elif maybe(e,en,k/kmax**cooling): 
         s,e = sn,en; burp("?")
       log.record(s) ##
-      if not k % The.optimize.era: burp(num(eb) + " \n")
-    print ":eb",num(eb),":sb",map(g3,sb),":k",k
-  report()
+      if not k % The.optimize.era:  burp("\n"+ num(eb) + " " )
+      if e > 1 - The.optimize.epsilon:
+        break
+    burp(":k "+ str(k)+"\n")
+    burp(map(g3,sb))
+  saReport(meta,history)
 
-def _sa(seed=1):
+#lesson: add in show marks
+
+def saReport(meta,history):
+  keys= sorted(history.keys())
+  for dep in meta.depen:
+    name=dep.name
+    print "\n",dep.name
+    hi = The.math.ninf
+    lo = The.math.inf
+    for key in keys:      
+      what= history[key].where[name]
+      hi = max(hi,what.hi)
+      lo = min(lo,what.lo)
+    for key in keys:
+      what= history[key].where[name]
+      nums = what.all
+      print xtile(nums, lo = lo, hi = hi,show=" %3.2f")
   
-  settings()
-  The.math.seed=seed
-  rseed()
-  sa()
-  print The
+# lesson : need to be able to disable all printing
+@study
+def _sa():
+  """Basic run time with
+  sa Schaffer"""
+  The.math.seed = 200
+  The.optimize.early=False
+  sa(Schaffer)
+
+@study
+def _sa1():
+  """Basic run time with sa+ZDT1"""
+  The.optimize.early=4
+  sa(ZDT1)
+
+@study
+def _sa2():
+  "20 repeats + ZDT1"
+  The.sa.verbose=False
+  sa(ZDT1)
 
 if __name__ == '__main__': eval(cmd())

@@ -42,7 +42,7 @@ from about import *
 class Schaffer(Model):
   def spec(i):
     return [ Num(name='$x', 
-                 bounds = (-1000,1000))
+                 bounds = (-100,100))
              ,Num(name='<f1')
              ,Num(name='<f2')
            ]
@@ -52,7 +52,7 @@ class Schaffer(Model):
     i.set("<f2", lst, (x - 2)**2 )
     #print i.get(lst, "$x"),i.get(lst,"<f2")
     return lst
-    
+  
 def _schaffered1():
   summary = Schaffer()
   _schaffered0(summary)
@@ -86,5 +86,21 @@ def _schaffered3(seed=1):
     print eg
   nl()
   _schaffered0(summary)
+
+class ZDT1(Model):
+  def spec(i):
+    lst = [Num(name='$'+str(n), bounds=(0,1))
+           for n in enumerate(range(30))]
+    return lst + [Num(name='<f1')
+                  ,Num(name='<f2')]
+  def score(i,lst):
+    n       = 30
+    g       = 1 + 9*sum(lst[1:-3])/(n-1)
+    one     = lst[0]
+    f1      = one
+    f2      = g * (1 - (one/g)**0.5)
+    lst[-2] = f1
+    lst[-1] = f2
+    return lst
 
 if __name__ == "__main__": eval(cmd())

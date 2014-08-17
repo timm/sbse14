@@ -112,6 +112,7 @@ class Num(About1):
     i.zero()
     i.name = name
     i.bounds = bounds
+    i.all = []
     for x in inits: i.inc(x)
   def ok(i,n):
     "Legal if in bounds (or unknown)"
@@ -134,6 +135,7 @@ class Num(About1):
   def __isub__(i,x): i.sub(x); return i
   def inc(i,x):
     "Remember 'x'."
+    i.all += [x]
     if x > i.hi: i.hi = x
     if x < i.lo: i.lo = x
     i.n  += 1
@@ -142,6 +144,7 @@ class Num(About1):
     i.m2 += delta*(x - i.mu)
   def sub(i,x):
     "Forget 'x'."
+    i.all = []
     if i.n < 2:  return i.zero()
     i.n  -= 1
     delta = x - i.mu

@@ -42,32 +42,27 @@ from models import *
 from optimize import *
 
 def sa(klass=Schaffer):
-  summary = None
+  meta = None
   show = The.sa.verbose
   kmax    = The.sa.max
   cooling = The.sa.cooling
-  def burp(x):
-    if show: say(x)
-  def maybe(old,new,t):
-    r=rand()
-    k= math.e**(-1*(old - new)/t) 
-    return k < r
-  def baseline(summary):
+  def burp(x):  show and say(x)
+  def maybe(old,new,temp): 
+    return math.e**(-1*(old - new)/temp) < rand()
+  def baseline():
     for _ in xrange(The.sa.baseline): 
-      summary.example()
+      meta.example()
   def energy(lst):
-    return fromHell(summary,lst)
+    return fromHell(meta,lst)
   def neighbor(old):
     new = old[:]
-    for num in summary.nums:
-      if rand() > The.sa.p:
+    for num in meta.nums:
+      if rand() > The.sa.p: 
         new[num.col] = any(num.lo,num.hi)
-    if not summary.ok(new):
-      return old
+    if not meta.ok(new): return old
     else:
-      new = summary.score(new)
-      summary.record(new)
-      return new
+      new = meta.score(new)
+      return meta.record(new)
   def report():
     for k in sorted(history.keys()):
       print history[k]
@@ -75,9 +70,9 @@ def sa(klass=Schaffer):
   history = {}  ##
   for _ in xrange(The.optimize.repeats): ##
     burp("\n")
-    summary = klass()
-    baseline(summary) # initialize 
-    sb = s = summary.example()
+    meta = klass()
+    baseline() # initialize 
+    sb = s = meta.example()
     eb = e = energy(s)
     print "EB0>",num(eb),map(g3,sb)
     for k,log in Watch(kmax,klass,history): ##
@@ -85,14 +80,11 @@ def sa(klass=Schaffer):
       sn = neighbor(s)
       en = energy(sn)
       if en > eb:
-        sb,eb = sn,en
-        burp("!")
+        sb,eb = sn,en;  burp("!")
       if en > e: 
-        s,e = sn,en
-        burp("+")
+        s,e = sn,en; burp("+")
       elif maybe(e,en,k/kmax**cooling):
-        s,e = sn,en
-        burp("?")
+        s,e = sn,en; burp("?")
       log.record(s) ##
       if not k % The.optimize.era: burp(num(eb) + " \n")
     print ":eb",num(eb),":sb",map(g3,sb),":k",k

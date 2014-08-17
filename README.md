@@ -320,7 +320,7 @@ MaxSmarter
 Never show users something minimizing something. This
 is America! Always maximize!
 
-Klass to Summary to Example
+Klass to Meta to Example
 ---------------------------
 
 At its core, my MOEAs manipulate a table of data:
@@ -337,32 +337,37 @@ Internally, the features divide into:
 + Independent (aka _indep_) features we can control;
 		
 Our meta-knowledge of those examples is kept in a
-high-level _summary_.  
-Each item in the _summary_ knows about
+high-level _meta_ variable.  
+Each item in  _meta_ knows about
 
 + what values that *might* be added to an example;
 + what values that *were* found in the examples.
 
-Using that knowledge, a _summary_  can:
+Using that knowledge,  _meta_  can:
 
 - _Guess_ possible values for the variables in a example;
 - Check if a new example is _ok_; i.e. is valid;
 - _Score_ a example; i.e. using a list's independent variables,
   it can set the dependent variables.
 - _Record_ a example's content; i.e. incrementally update counters
-  in the summary showing what values were found in the examples.
+  in _meta_ showing what values were found in the examples.
 
-Note that there is one summary per feature.
+Note that there is one _meta_ per feature.
 So if we make 1000 examples,
 where each list is a example of size 5, then there
-exists *one* _summary_ that is a list of size 5 (and the _i-th_ summary
+exists *one* _meta_ that is a list of size 5 (and the _i-th_ meta
 refers to the _i-th_ value in all the examples).
+
+Recursively, there is also a _meta_ that holds a list of _meta_.
+So to mutate all the values in
+one example, the holding _meta_ asks each of the held _meta_s to
+mutate one value.
 
 The lifecycle of example is:
 
-1. At design time, we build a _klass_ that defines how to generate a _summary_.
-2. At runtime, we start by using that _klass_ to build a particular _summary_.
-3. From that particular _summary_, we generate  independent values;
+1. At design time, we build a _klass_ that defines how to generate a _meta_.
+2. At runtime, we start by using that _klass_ to build a particular _meta_.
+3. From that particular _meta_, we generate  independent values;
       + And, at this stage, all the dependent values are null.
 4. Optionally, we can use those independent values to compute the dependent values.
       + Note it is invalid to guess dependent variables since these

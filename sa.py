@@ -42,18 +42,19 @@ from models import *
 from optimize import *
 
 def sa(klass=Schaffer):
-  meta = None
-  show = The.sa.verbose
+  meta    = None
+  show    = The.sa.verbose
   kmax    = The.sa.max
   cooling = The.sa.cooling
-  def burp(x):  show and say(x)
+  def burp(x):  
+    show and say(x)
+  def energy(lst): 
+    return fromHell(meta,lst)
   def maybe(old,new,temp): 
     return math.e**(-1*(old - new)/temp) < rand()
   def baseline():
     for _ in xrange(The.sa.baseline): 
       meta.example()
-  def energy(lst):
-    return fromHell(meta,lst)
   def neighbor(old):
     new = old[:]
     for num in meta.nums:

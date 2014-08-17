@@ -78,10 +78,11 @@ def fromHell(klass,lst):
             
 class Watch(object):
   def __iter__(i): return i
-  def __init__(i,most,klass,logs=None,earlyStop=True):
+  def __init__(i,most,klass,logs=None):
+    i.early = The.optimize.early  
     i.logs = logs or {}
     i.thisLog  = {}
-    i.most, i.klass,i.earlyStop = most,klass,earlyStop
+    i.most, i.klass = most,klass
     i.step, i.era  = 1, 1
   def record(i,result):
     """ Each recorded result is one clock tick.
@@ -109,7 +110,7 @@ class Watch(object):
     if i.step > i.most: # end of run!
       raise StopIteration()
     if i.step >= i.era:     # pause to reflect
-      if i.earlyStop:     # maybe exit early
+      if i.early:     # maybe exit early
         if i.stop():        
            raise StopIteration()
       i.era += The.optimize.era   # set next pause point

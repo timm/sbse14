@@ -121,16 +121,17 @@ def optimizeings():
     return not o.binaryDomination(betters,
                                   worses)
   return Thing(epsilon = 0.01,
-               era     = 100,
+               era     = 50,
                runs    = 50,
-               repeats = 1,
+               repeats = 3,
+               early = False,
                noImprovement= noImprovementBin)
 
 @settings
 def saings():
   return Thing(p       = 0.33,
-               stagger = 1.0,
-               baseline = 100,
+               cooling = 0.6,
+               baseline = 1000,
                max = 1000,
                verbose=True)
 

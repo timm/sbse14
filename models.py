@@ -42,7 +42,7 @@ from about import *
 class Schaffer(Model):
   def spec(i):
     return [ Num(name='$x', 
-                 bounds = (-10000,10000))
+                 bounds = (-100,100))
              ,Num(name='<f1')
              ,Num(name='<f2')
            ]
@@ -50,6 +50,7 @@ class Schaffer(Model):
     x = i.get(lst, "$x")
     i.set("<f1", lst, x**2       )
     i.set("<f2", lst, (x - 2)**2 )
+    #print i.get(lst, "$x"),i.get(lst,"<f2")
     return lst
     
 def _schaffered1():

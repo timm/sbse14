@@ -45,10 +45,13 @@ def sa(klass=Schaffer):
   summary = None
   show = The.sa.verbose
   kmax    = The.sa.max
+  cooling = The.sa.cooling
   def burp(x):
     if show: say(x)
   def maybe(old,new,t):
-    return math.e**((old - new)*1.0/t) < rand(); ###
+    r=rand()
+    k= math.e**(-1*(old - new)/t) 
+    return k < r
   def baseline(summary):
     for _ in xrange(The.sa.baseline): 
       summary.example()
@@ -68,7 +71,7 @@ def sa(klass=Schaffer):
   def report():
     for k in sorted(history.keys()):
       print history[k]
-
+  def num(x): return str(int(100*x))
   history = {}  ##
   for _ in xrange(The.optimize.repeats): ##
     burp("\n")
@@ -76,24 +79,23 @@ def sa(klass=Schaffer):
     baseline(summary) # initialize 
     sb = s = summary.example()
     eb = e = energy(s)
-    print "EB0>",eb
+    print "EB0>",num(eb),map(g3,sb)
     for k,log in Watch(kmax,klass,history): ##
-      txt="."
+      burp(".")
       sn = neighbor(s)
       en = energy(sn)
       if en > eb:
         sb,eb = sn,en
-        txt = "!"
+        burp("!")
       if en > e: 
         s,e = sn,en
-        txt = ">"
-      elif maybe(e,en,k/kmax**The.sa.stagger):
+        burp("+")
+      elif maybe(e,en,k/kmax**cooling):
         s,e = sn,en
-        txt = "?"
+        burp("?")
       log.record(s) ##
-      burp(txt) 
-      if not k % 20: burp(str(eb) + " \n")
-    print "EB>",eb
+      if not k % The.optimize.era: burp(num(eb) + " \n")
+    print ":eb",num(eb),":sb",map(g3,sb),":k",k
   report()
 
 def _sa(seed=1):

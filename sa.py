@@ -80,11 +80,11 @@ def sa(klass=Schaffer):
       burp(".")
       sn = neighbor(s)
       en = energy(sn)
-      if en > eb:
+      if en > eb: 
         sb,eb = sn,en;  burp("!")
-      if en > e: 
+      if en > e : 
         s,e = sn,en; burp("+")
-      elif maybe(e,en,k/kmax**cooling):
+      elif maybe(e,en,k/kmax**cooling): 
         s,e = sn,en; burp("?")
       log.record(s) ##
       if not k % The.optimize.era: burp(num(eb) + " \n")

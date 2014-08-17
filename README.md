@@ -1,4 +1,4 @@
-![Rules](notascii/rules.png "Timm's rules")
+![Rules](etc/rules.png "Timm's rules")
  
 tim.menzies@gmail.com  
 Aug 9 2014

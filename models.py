@@ -42,7 +42,7 @@ from about import *
 class Schaffer(Model):
   def spec(i):
     return [ Num(name='$x', 
-                 bounds = (-100,100))
+                 bounds = (-1000,1000))
              ,Num(name='<f1')
              ,Num(name='<f2')
            ]

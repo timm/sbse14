@@ -125,6 +125,8 @@ def optimizeings():
                runs    = 50,
                repeats = 20,
                early   = False,
+               format = " %3.2f",
+                width  = 50,
                noImprovement= noImprovementBin)
 
 @settings

@@ -80,15 +80,15 @@ def sa(klass=Schaffer):
       burp(".")
       sn = neighbor(s)
       en = energy(sn)
-      if en > eb + The.optimize.epsilon : 
+      if en > (eb + The.optimize.epsilon) : 
         sb,eb = sn,en;  burp("!")
-      if en > e + The.optimize.epsilon : 
+      if en > (e + The.optimize.epsilon) : 
         s,e = sn,en; burp("+")
       elif maybe(e,en,k/kmax**cooling): 
         s,e = sn,en; burp("?")
       log.record(s) ##
       if not k % The.optimize.era:  burp("\n"+ num(eb) + " " )
-      if e > 1 - The.optimize.epsilon:
+      if e > (1 - The.optimize.epsilon):
         break
     burp(":k "+ str(k)+"\n")
     burp(map(g3,sb))
@@ -110,7 +110,9 @@ def saReport(meta,history):
     for key in keys:
       what= history[key].where[name]
       nums = what.all
-      print xtile(nums, lo = lo, hi = hi,show=" %3.2f")
+      print xtile(nums, lo = lo, hi = hi,
+                  width=The.optimize.width,
+                  show =The.optimize.format)
   
 # lesson : need to be able to disable all printing
 @study
@@ -118,7 +120,12 @@ def _sa():
   """Basic run time with
   sa Schaffer"""
   The.math.seed = 200
-  The.optimize.early=False
+  The.sa.verbose=True
+  The.optimize.era=50
+  The.optimize.epsilon=0
+  The.optimize.repeats=1
+  The.optimize.format = "%4.0f"
+  The.optimize.width  = 25
   sa(Schaffer)
 
 @study

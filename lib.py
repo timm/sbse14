@@ -223,7 +223,8 @@ def study(f):
     t1 = time.time()
     print "\n",The
     f()
-    t2 = time.time()   
+    t2 = time.time() 
+    print The
     print "# Runtime: %.3f secs" % (t2-t1)
   return wrapper
 

@@ -1,48 +1,68 @@
 """
-# SA (plus tricks)
+## SA (plus tricks)
 
-Timm tricks for building an optimization.
+This file shows some
+of Timm's tricks for building an optimization.
 
 To illustrate the tricks, they are applied to 
 build a simulated annealer.
 
+Share and enjoy.
+
 ## Standard Headers
 
-Here we see some standard Pythin file startups
+Here we see some standard Python file headers.
 
 """
 from __future__ import division
 import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
-
-
-"""
-Place to store things and stuff 
 """
 
+## Options Handling
+
+Place to store things and stuff.
+
+_IDIOM_: every time you run an optimizer, show a
+dump of the options used in that run.  
+
+_TRICK_: store the options in a nested anonymous
+container.
+
+"""
 class o: 
+  "Peter Norvig's trick for anonymous containers."
   def __init__(i,**d): i.__dict__.update(d)
-
-"""
-Place to store options 
 """
 
+For example, here are the options.
 
-The = o(cache= o(keep    = 128,
-                 pending = 4),
-        misc = o(verbose = True,
-                 epsilon = 1.01,
-                 seed    = 1,
-                 era     = 25),
-        sa =   o(cooling = 0.6,
-                 kmax    = 1000,
-                 patience= 250,
-                 baseline= 100))
+"""
+The= o(cache = 
+          o(keep    = 128 # size of sample sace
+           ,pending = 4
+          ),
+       misc = 
+          o(verbose = True # show stuff?
+           ,epsilon = 1.01 # where is close, close enough
+           ,seed    = 1    # random number seed
+           ,era     = 25   # pause every end of era
+          ),  
+       sa =   
+          o(cooling = 0.6  # cooling schedule
+           ,kmax    = 1000 # max evals
+           ,patience= 250  # run for at least this long
+           ,baseline= 100  # initial sample size 
+          ))
 
 ### Misc utils #####################################
 rand=  random.random
 any=   random.choice
-rseed= random.seed
+
+def rseed(seed = None):
+  if seed==None:
+    seed = The.misc.seed
+   random.seed(seed)
 
 def log2(x): return math.log(x)/math.log(2)
 def say(x): 
@@ -274,7 +294,7 @@ def sa(m):
 @study
 def saDemo(m):
   "Basic study."
-  rseed(The.misc.seed)
+  rseed()
   print "\n",m.name()
   sb,eb = sa(m)
   x= g3(sb.x)

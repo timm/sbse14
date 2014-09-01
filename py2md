@@ -41,7 +41,7 @@ BEGIN { First = 1
                print "````"
          next
        }
-{ print $0}
+{ print $0 }
 END { if (In) print "````" }
 ' 
 ) > ${path}

@@ -1,4 +1,5 @@
 """
+
 ## SA (plus tricks)
 
 This file shows some
@@ -17,200 +18,51 @@ Here we see some standard Python file headers.
 from __future__ import division
 import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
+
+from base import *
+from log  import *
 """
 
-## Options Handling
 
-Place to store things and stuff.
+## Simulation Experiment Control
 
-_IDIOM_: every time you run an optimizer, show a
-dump of the options used in that run.  
-
-_TRICK_: store the options in a nested anonymous
-container.
+The code adds a set of cliches onto
+to some optimization call.
 
 """
-class o: 
-  "Peter Norvig's trick for anonymous containers."
-  def __init__(i,**d): i.__dict__.update(d)
-"""
-
-For example, here are the options.
-
-"""
-The= o(cache = 
-          o(keep    = 128 # size of sample sace
-           ,pending = 4
-          ),
-       misc = 
-          o(verbose = True # show stuff?
-           ,epsilon = 1.01 # where is close, close enough
-           ,seed    = 1    # random number seed
-           ,era     = 25   # pause every end of era
-          ),  
-       sa =   
-          o(cooling = 0.6  # cooling schedule
-           ,kmax    = 1000 # max evals
-           ,patience= 250  # run for at least this long
-           ,baseline= 100  # initial sample size 
-          ))
-
-### Misc utils #####################################
-rand=  random.random
-any=   random.choice
-
-def rseed(seed = None):
-  if seed==None:
-    seed = The.misc.seed
-   random.seed(seed)
-
-def log2(x): return math.log(x)/math.log(2)
-def say(x): 
-  sys.stdout.write(str(x)); sys.stdout.flush()
-
-def showd(d,lvl=0): 
-  d = d if isinstance(d,dict) else d.__dict__
-  after, line,gap = [], '', '\t' * lvl
-  for k in sorted(d.keys()):
-    if k[0] == "_": continue
-    val = d[k]
-    if isinstance(val,(dict,o)):
-       after += [k]
-    else:
-      if callable(val):
-        val = val.__name__
-      line += (':%s %s ' % (k,val))
-  print gap + line
-  for k in after: 
-      print gap + (':%s' % k)
-      showd(d[k],lvl+1)
-
-def g3(lst): return gn(lst,3)
-def g2(lst): return gn(lst,2)
-def g0(lst): return gn(lst,0)
-
-def gn(lst,n):
-  fmt = '%.' + str(n) + 'f'
-  return ', '.join([(fmt % x) for x in lst])
-
-def norm(x,lo,hi):
-  tmp = (x - lo) / (hi - lo + 0.00001) 
-  return 1 - max(0,min(tmp,1))
-
-def x(n): return ':%3.1f' % n
-
-def burp(*lst):  
-  The.misc.verbose and say(
-    ', '.join(map(str,lst)))
-
 def study(f):
-  """All outputs have date,time, notes,
-  a reset of the options,  settings, runtimes."""
   def wrapper(*lst):
-    what = f.__name__
-    doc  = f.__doc__ 
+    what = f.__name__# print the function name
+    doc  = f.__doc__ # print the function doc
     if doc:
       doc= re.sub(r"\n[ \t]*","\n# ",doc)
-    show = datetime.datetime.now().strftime
+    # print when this ran
+    show = datetime.datetime.now().strftime 
     print "\n###",what,"#" * 50
     print "#", show("%Y-%m-%d %H:%M:%S")
     if doc: print "#",doc
     t1 = time.time()
-    f(*lst)
-    t2 = time.time() 
+    f(*lst)          # run the function
+    t2 = time.time() # show how long it took to run
     print "\n" + ("-" * 50)
-    showd(The)
+    showd(The)       # print the options
     print "\n# Runtime: %.3f secs" % (t2-t1)
   return wrapper
+"""
 
-### Classes ########################################
+## Parts of a Simulation
 
-class Log():
-  "Keep a random sample of stuff seen so far."
-  def __init__(i,inits=[],label=''):
-    i.label = label
-    i._cache,i.n,i._report = [],0,None
-    i.setup()
-    map(i.__iadd__,inits)
-  def __iadd__(i,x):
-    if x == None: return x
-    i.n += 1
-    changed = False
-    if len(i._cache) < The.cache.keep:
-      changed = True
-      i._cache += [x]               # then add
-    else: # otherwise, maybe replace an old item
-      if rand() <= The.cache.keep/i.n:
-        changed = True
-        i._cache[int(rand()*The.cache.keep)] = x
-    if changed:      
-      i._report = None # wipe out 'what follows'
-      i.change(x)
-    return i
-  def any(i):  
-    return  any(i._cache)
-  def has(i):
-    i._report = i._report or i.report()
-    return i._report
-  def setup(i): pass
+There are several parts of a simulation many of which 
+have a similar form; i.e. some _x-y_ pair where _"x"_
+is the independent variable and _"y"_ is the dependent variable.
+of indepene
 
-class Num(Log):
-  def setup(i):
-    i.lo, i.hi = 10**32, -10**32
-  def change(i,x):
-    i.lo = min(i.lo, x)
-    i.hi = max(i.hi, x)
-  def norm(i,x):
-    return (x - i.lo)/(i.hi - i.lo + 0.000001)
-  def report(i):
-    lst = i._cache = sorted(i._cache)
-    n   = len(lst)     
-    return o(
-      median= i.median(),
-      iqr   = lst[int(n*.75)] - lst[int(n*.5)],
-      lo    = i.lo, 
-      hi    = i.hi)
-  def ish(i,f=0.1): 
-    return i.any() + f*(i.any() - i.any())
-  def median(i):
-    n = len(i._cache)
-    p = n // 2
-    if (n % 2):  return i._cache[p]
-    q = p + 1
-    q = max(0,(min(q,n)))
-    return (i._cache[p] + i._cache[q])/2
++ _It_ : some current candidate
 
-class Sym(Log):
-  def setup(i):
-    i.counts,i.mode,i.most={},None,0
-  def change(i,x):
-    c= i.counts[x]= i.counts.get(x,0) + 1
-    if c > i.most:
-      i.mode,i.most = x,c
-  def report(i):
-     return o(dist= i.dist(), 
-              ent = i.entropy(),
-              mode= i.mode)
-  def dist(i):
-    n = sum(i.counts.values())
-    return sorted([(d[k]/n, k) for 
-                   k in i.counts.keys()], 
-                  reverse=True)
-  def ish(i):
-    r,tmp = rand(),0
-    for w,x in i.has().dist:
-      tmp  += w
-      if tmp >= r: 
-        return x
-    return x
-  def entropy(i,e=0):
-    for k in i.counts:
-      p = i.counts[k]/len(i._cache)
-      e -= p*log2(p) if p else 0
-    return e    
 
-### Classes ########################################
+## "Of"-ing
 
+"""
 class In:
   def __init__(i,lo=0,hi=1,txt=""):
     i.txt,i.lo,i.hi = txt,lo,hi
@@ -244,17 +96,21 @@ class Model:
     old = it.x
     new = [n(x,f) for x,f in zip(old,i.of.x)]
     return o(x=new)
+"""
 
-#XY = a pair of related indep,dep lists
-#it = actual values
-#of = meta knowledge of members of it
-#log = a record of things seen in it
+XY = a pair of related indep,dep lists
 
-#seperate (1) guesses indep variables (2) using them to
-#calc dep values (3) logging what was picked
+it = actual values
 
+of = meta knowledge of members of it
 
+log = a record of things seen in it
 
+seperate (1) guesses indep variables (2) using them to
+
+calc dep values (3) logging what was picked
+
+"""
 def sa(m):
   def more(k,e):
     if k > The.sa.patience:
@@ -290,7 +146,11 @@ def sa(m):
       mark = "!"
     burp(mark)
   return sb,eb    
+"""
 
+Defining a study using _sa_.
+
+"""
 @study
 def saDemo(m):
   "Basic study."
@@ -300,7 +160,11 @@ def saDemo(m):
   x= g3(sb.x)
   y= g3(sb.y)
   print "\n------\n:e",eb,"\n:y",y,"\n:x",x
+"""
 
+## Models
+
+"""
 class Schaffer(Model):
   def spec(i):
     return o(x= [In(-5,5,0)],
@@ -318,7 +182,10 @@ class ZDT1(Model):
     return it.x[0]
   def f2(i,it):
     return 1 + 9*sum(it.x[1:]) / 29
+"""
 
+## Demo Code
 
+"""
 saDemo(Schaffer())
 saDemo(ZDT1())

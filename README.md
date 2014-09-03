@@ -1,8 +1,16 @@
+
 Sbse14
 ======
 
 Code for earch-based software engineering.
 
+For More Details
+==========
+
+[Go to the wiki](https://github.com/timm/sbse14/wiki).
+
+Copyleft
+=========
 
 Copyright (c) 2014, Tim Menzies   
 All rights reserved.

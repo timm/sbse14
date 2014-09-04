@@ -144,10 +144,10 @@ contain nulls for the dependent variables. This can lead to bugs of the form:
 
     TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'
 
-So, two solutions:
+So, two solutions to this:
 
 + _Always_ score the dependents when the independents change;
-+ But if the evaluation process is slow, then carefully code around the null problem.
++ But if the evaluation process is slow, then just more code carefully around the null problem.
 
 
 ### Code

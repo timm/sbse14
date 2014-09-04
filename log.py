@@ -163,6 +163,12 @@ class Num(Log):
     return (i._cache[p] + i._cache[q])/2
 """
 
+WARNING: the call to _sorted_ in _report()_ makes this code
+a candidate for a massive CPU suck (it is always sorting newly arrived data).
+So distinguish between _adding_ things to a log in the _last_ era and 
+using that information in the _next_ era (so the log from the last era
+is staple in the current).
+
 ### Sym
 
 A _Sym_ is a _Log_ for non-numerics.

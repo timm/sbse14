@@ -39,7 +39,10 @@ so we normalize energies
 in the range lo..hi  to 1..0 .
 
 A baseline study collects standard values for these
-dependent values (see _base_). These baseline is
+dependent values: see the _base_ variable, which calls the
+model The.sa.baseline number of times. 
+
+These baseline is
 used to learn the _lo,hi_ values of the energy
 which is then used to normalize all future energies
 one to zero, min to max.

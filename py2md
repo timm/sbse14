@@ -4,11 +4,10 @@
 stem="${1%.*}"
 file="${stem}py"
 path="../sbse14.wiki/${file}.md"
-url="https://github.com/timm/sbse14/blob/master"
+url="https://github.com/timm/sbse14"
 
 echo -n "markuping $1: "
 
-out=${url}/$1
 
 src=$1
 target=${path}
@@ -23,7 +22,7 @@ cat<<EOF
 
 # $stem
 
-_View this source at [$stem]($out)._
+_View this source at [the code directory]($url)._
 
 ____
 

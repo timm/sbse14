@@ -12,7 +12,7 @@ status:
 	- git status
 
 markup:
-	@$(foreach  f, $(shell ls *.py), bash py2md $f ; )
+	@$(foreach  f, $(shell ls *.py), bash py2md $f --force ; )
 
 publish: markup
 	cd $(markdown); git add *py.md; make commit

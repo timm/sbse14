@@ -116,7 +116,6 @@ def norm(x,lo,hi):
 def mron(x,lo,hi):
   "Generate a num 1..0 for lo..hi"
   return 1 - norm(x,lo,hi)
-
 """
 
 ### Printing stuff

@@ -97,7 +97,6 @@ Defining a study using _sa_.
 @study
 def saDemo(m):
   "Basic study."
-  rseed()
   print "\n",m.name()
   sb,eb = sa(m)
   x= g3(sb.x)

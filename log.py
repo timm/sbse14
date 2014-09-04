@@ -121,7 +121,7 @@ class Log():
   def any(i):  
     return  any(i._cache)
   def has(i):
-    i._report = i._report or i.report()
+    if i._report == None: i._report =  i.report()
     return i._report
   def setup(i): pass
 """
@@ -180,16 +180,16 @@ class Sym(Log):
     if c > i.most:
       i.mode,i.most = x,c
   def report(i):
-     return o(dist= i.dist(), 
+    return o(dist= i.dist(), 
               ent = i.entropy(),
               mode= i.mode)
   def dist(i):
-    n = sum(i.counts.values())
-    return sorted([(d[k]/n, k) for 
-                   k in i.counts.keys()], 
+    d = i.counts
+    n = sum(d.values())
+    return sorted([(d[k]/n, k) for k in d.keys()], 
                   reverse=True)
   def ish(i):
-    r,tmp = rand(),
+    r,tmp = rand(),0
     for w,x in i.has().dist:
       tmp  += w
       if tmp >= r: 
@@ -200,3 +200,22 @@ class Sym(Log):
       p = i.counts[k]/len(i._cache)
       e -= p*log2(p) if p else 0
     return e    
+"""
+
+#### Sym, Example
+
+As an example of generating numbers from a distribution, consider the following code.
+The logged population has plus, grapes and pears in the ration 2:1:1.
+From that population, we can generate another distribution that is nearly the same:
+
+    >>> symDemo()
+    {'plums': 47, 'pears': 26, 'grapes': 27}
+
+
+"""
+def symDemo():
+  rseed()
+  log= Sym(['plums']*40 +['grapes']*20 +['pears']*20)
+  found= Sym([log.ish() for _ in xrange(100)])
+  print found.counts
+

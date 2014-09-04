@@ -1,9 +1,12 @@
 #!/bin/bash
 
+
 stem="${1%.*}"
 file="${stem}py"
 path="../sbse14.wiki/${file}.md"
 url="https://github.com/timm/sbse14/blob/master"
+
+echo -n "markuping $1: "
 
 out=${url}/$1
 
@@ -15,6 +18,8 @@ if [ -n "$2" -o "$src" -nt "$target" ]
 then
 (
 cat<<EOF
+
+[[etc/img/leftarrow.png]]   [Back   to SBSE'14](Home)
 
 # $stem
 
@@ -46,7 +51,8 @@ END { if (In) print "````" }
 ' 
 ) > ${path}
 
-echo ${path}
+echo -n " updating, "
 
 fi
+echo "ok"
 

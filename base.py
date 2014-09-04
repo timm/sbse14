@@ -1,6 +1,10 @@
 """
 
-## Basics
+## Basic Stuff
+
+General utils- should be useful for all Python programs.
+
+## Standard Header
 
 """
 from __future__ import division
@@ -105,9 +109,14 @@ def log2(num):
   return math.log(num)/math.log(2)
 
 def norm(x,lo,hi):
-  "Generate a num 0..1"
+  "Generate a num 0..1 for lo..hi"
   tmp = (x - lo) / (hi - lo + 0.00001) 
-  return 1 - max(0,min(tmp,1))
+  return max(0,min(tmp,1))
+
+def mron(x,lo,hi):
+  "Generate a num 1..0 for lo..hi"
+  return 1 - norm(x,lo,hi)
+
 """
 
 ### Printing stuff
@@ -126,17 +135,16 @@ def gn(lst,n):
   "Function to print floats in short form"
   fmt = '%.' + str(n) + 'f'
   return ', '.join([(fmt % x) for x in lst])
+
+def x(n):
+  "Shorthand for short floats"
+  return ':%3.1f' % n
 """
 
 The following convenience functions print a list
-of floats to  0, 2, or 3 decimal places.
+of floats to  0, 2, or 3 decimal places (useful for condensing old reports).
 
 """
 def g0(lst): return gn(lst,0)
 def g2(lst): return gn(lst,2)
 def g3(lst): return gn(lst,3)
-
-def x(n):
-  "Shorthand for short floats"
-  return ':%3.1f' % n
-

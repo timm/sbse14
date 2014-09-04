@@ -8,107 +8,48 @@ of Timm's tricks for building an optimization.
 To illustrate the tricks, they are applied to 
 build a simulated annealer.
 
+In sumamry, those tricks are:
+
++ [Some basic Python tricks](basepy);
++ [Tricks for logging values](logpy);
++ [Tricks for succinctly specifying models](modelspy);
++ [Tricks for running optimization studies](optimizepy).
+
 Share and enjoy.
 
-## Standard Headers
 
-Here we see some standard Python file headers.
-
+### Standard Headers
 """
 from __future__ import division
-import sys, random, math, datetime, time,re
+import sys
 sys.dont_write_bytecode = True
 
-from base import *
-from log  import *
+from models import *
 """
 
+### Code
 
-## Simulation Experiment Control
+The following code assumes that _energy_ is the 
+sum of the dependent variables.
 
-The code adds a set of cliches onto
-to some optimization call.
+The _m_ variable is an instance of class [Model](modelspy).
 
-"""
-def study(f):
-  def wrapper(*lst):
-    what = f.__name__# print the function name
-    doc  = f.__doc__ # print the function doc
-    if doc:
-      doc= re.sub(r"\n[ \t]*","\n# ",doc)
-    # print when this ran
-    show = datetime.datetime.now().strftime 
-    print "\n###",what,"#" * 50
-    print "#", show("%Y-%m-%d %H:%M:%S")
-    if doc: print "#",doc
-    t1 = time.time()
-    f(*lst)          # run the function
-    t2 = time.time() # show how long it took to run
-    print "\n" + ("-" * 50)
-    showd(The)       # print the options
-    print "\n# Runtime: %.3f secs" % (t2-t1)
-  return wrapper
-"""
+This code seeks to maximize the energy
+so we normalize energies
+in the range lo..hi  to 1..0 .
 
-## Parts of a Simulation
+A baseline study collects standard values for these
+dependent values (see _base_). These baseline is
+used to learn the _lo,hi_ values of the energy
+which is then used to normalize all future energies
+one to zero, min to max.
 
-There are several parts of a simulation many of which 
-have a similar form; i.e. some _x-y_ pair where _"x"_
-is the independent variable and _"y"_ is the dependent variable.
-of indepene
-
-+ _It_ : some current candidate
-
-
-## "Of"-ing
-
-"""
-class In:
-  def __init__(i,lo=0,hi=1,txt=""):
-    i.txt,i.lo,i.hi = txt,lo,hi
-  def __call__(i): 
-    return i.lo + (i.hi - i.lo)*rand()
-  def log(i): 
-    return Num()
-
-class Model:
-  def name(i): 
-    return i.__class__.__name__
-  def __init__(i):
-    i.of = i.spec()
-    i.log= o(x= [z.log() for z in i.of.x],
-              y= [Num()   for _ in i.of.y])
-  def indepIT(i):
-    "Make new it."
-    return o(x=[z() for z in i.of.x])
-  def depIT(i,it):
-    "Complete it's dep variables."
-    it.y = [f(it) for f in i.of.y]
-    return it
-  def logIT(i,it):
-    "Remember what we have see in it."
-    for val,log in zip(it.x, i.log.x): log += val
-    for val,log in zip(it.y, i.log.y): log += val
-  def aroundIT(i,it,p=0.5):
-    "Find some place around it."
-    def n(val,f): 
-      return f() if rand() < p else val
-    old = it.x
-    new = [n(x,f) for x,f in zip(old,i.of.x)]
-    return o(x=new)
-"""
-
-XY = a pair of related indep,dep lists
-
-it = actual values
-
-of = meta knowledge of members of it
-
-log = a record of things seen in it
-
-seperate (1) guesses indep variables (2) using them to
-
-calc dep values (3) logging what was picked
+In the following, we terminate early if we fall within
+_The.misc.epsilon_ of best energy or we do more
+that _The.sa.kmax_ iterations.
+ 
+Finally, the _burp_ function prints some output- which can
+suppressed via _The.misc.verbose=False_.
 
 """
 def sa(m):
@@ -125,7 +66,7 @@ def sa(m):
   base = Num([energy(m, m.indepIT()) 
              for _ in xrange(The.sa.baseline)])
   sb = s = m.indepIT()
-  eb = e = norm(energy(m,s), base.lo, base.hi)
+  eb = e = mron(energy(m,s), base.lo, base.hi)
   k = 0
   while k <  The.sa.kmax and more(k,eb):
     if not k % The.misc.era: 
@@ -133,7 +74,7 @@ def sa(m):
     k += 1
     mark = "."
     sn = m.aroundIT(s,p=1)
-    en = norm(energy(m,sn), base.lo, base.hi)
+    en = mron(energy(m,sn), base.lo, base.hi)
     if en >  (e * The.misc.epsilon):
       s,e = sn,en
       mark = "+"
@@ -147,6 +88,8 @@ def sa(m):
     burp(mark)
   return sb,eb    
 """
+
+## Example
 
 Defining a study using _sa_.
 
@@ -162,30 +105,85 @@ def saDemo(m):
   print "\n------\n:e",eb,"\n:y",y,"\n:x",x
 """
 
-## Models
-
-"""
-class Schaffer(Model):
-  def spec(i):
-    return o(x= [In(-5,5,0)],
-              y= [i.f1,i.f2])
-  def f1(i,it):
-    x=it.x[0]; return x**2
-  def f2(i,it):
-    x=it.x[0]; return (x-2)**2
-
-class ZDT1(Model):
-  def spec(i):
-    return o(x= [In(0,1,z) for z in range(30)],
-              y= [i.f1,i.f2])
-  def f1(i,it):
-    return it.x[0]
-  def f2(i,it):
-    return 1 + 9*sum(it.x[1:]) / 29
-"""
-
 ## Demo Code
 
 """
 saDemo(Schaffer())
 saDemo(ZDT1())
+"""
+
+Output from the first call:
+
+
+    ### saDemo ##################################################
+    # 2014-09-02 11:19:58
+    # Basic study.
+    
+    Schaffer
+    
+    , 0000, :0.2,  !.?+?+??.+?.++?+.++...?.+
+    , 0025, :1.0,  .?+..?+?+..+..?++..??+.?.
+    , 0050, :1.0,  +....?+.?+.+.?++++?+.?.+.
+    , 0075, :1.0,  .?+......?+..?+......+...
+    , 0100, :1.0,  .+........?+.?++++?.+?+..
+    , 0125, :1.0,  ..+...?+.................
+    , 0150, :1.0,  ................?++...+?.
+    , 0175, :1.0,  +++...?+.+.?++.......?.+.
+    , 0200, :1.0,  ...?+..+.+..?+.+.+.......
+    , 0225, :1.0,  ...?+..............+...?+
+    , 0250, :1.0,  .
+    ------
+    :e 0.997611905488 
+    :y 0.490, 1.690 
+    :x 0.700
+    
+    --------------------------------------------------
+    
+    :cache
+        :keep 128 :pending 4 
+    :misc
+        :epsilon 1.01 :era 25 :seed 1 :verbose True 
+    :sa
+        :baseline 100 :cooling 0.6 :kmax 1000 :patience 250 
+    
+    # Runtime: 0.007 secs
+    
+Output from the second call:
+
+    ### saDemo ##################################################
+    # 2014-09-02 11:19:58
+    # Basic study.
+    
+    ZDT1
+    
+    , 0000, :0.2,  !?+?!??++?+?++.!?++.....?
+    , 0025, :0.8,  !?+?+?+.+..+....?.+.?++.+
+    , 0050, :1.0,  ?+?..?+?+.+.....+.+...?..
+    , 0075, :1.0,  ?++?......?+.+....?..?++.
+    , 0100, :1.0,  +.......?..?+.+.......?.+
+    , 0125, :1.0,  ++?+.....................
+    , 0150, :1.0,  ?++...?..?+.+.?+++..?+..+
+    , 0175, :1.0,  +...............?......+.
+    , 0200, :1.0,  .........................
+    , 0225, :1.0,  ....?++.+......?+........
+    , 0250, :1.0,  .
+    ------
+    :e 1 
+    :y 0.125, 4.186 
+    :x 0.125, 0.407, 0.137, 0.079, 0.154, 0.301, 
+       0.999, 0.479, 0.109, 0.454, 0.395, 0.333, 
+       0.268, 0.196, 0.926, 0.322, 0.133, 0.470, 
+       0.043, 0.134, 0.755, 0.859, 0.156, 0.318, 
+       0.196, 0.416, 0.133, 0.089, 0.386, 0.618
+    
+    --------------------------------------------------
+    
+    :cache
+        :keep 128 :pending 4 
+    :misc
+        :epsilon 1.01 :era 25 :seed 1 :verbose True 
+    :sa
+        :baseline 100 :cooling 0.6 :kmax 1000 :patience 250 
+    
+    # Runtime: 0.011 secs
+"""

@@ -34,7 +34,6 @@ def some(lst,p)  :
   "Returns 'p'% of a list,selected at random."
   return [x for x in lst if sometimes(p)]
 
-
 def one(lst): 
   "Returns one item in a list, selected at random"
   return lst[  int(any(0,len(lst) - 1)) ] 
@@ -90,7 +89,6 @@ def rows(file, n=0, bad=r'["\' \t\r\n]',sep=',',wrapper=noop) :
     if line: 
         yield n,map(wrapper,line)
 
-
 def some(d,enough=10**32):
   """
   Given a dictionary d{k1=n1, k2=n2, ...},
@@ -116,4 +114,3 @@ def some(d,enough=10**32):
         yield thing
         enough -= 1
         break
-

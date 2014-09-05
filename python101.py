@@ -7,6 +7,8 @@ if brief and cool.
 
 Warning: dumped in quickly, not tested.
 
+### Type Coercion
+
 """
 def atom(x):
   "Converts strong to an int or a float."
@@ -15,7 +17,11 @@ def atom(x):
     try: return float(x)
     except ValueError:
       return x
+"""
 
+### Random Stuff
+
+"""
 import random,re
 any = random.uniform 
 seed  = random.seed
@@ -32,9 +38,11 @@ def some(lst,p)  :
 def one(lst): 
   "Returns one item in a list, selected at random"
   return lst[  int(any(0,len(lst) - 1)) ] 
+"""
 
-#### interators
+### Iterators
 
+"""
 def item(x) : 
   "Return all non-list items in a nested list"
   if isinstance(x,(tuple,list)):

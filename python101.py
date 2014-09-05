@@ -49,13 +49,13 @@ def item(x) :
       for z in item(y): yield z
   else: yield x
 
-def cycle(l):
-     """Returns an infinite number of items from a list, 
-     in a random order."""
-     while True:
-          random.shuffle(l)
-          for i in l:
-               yield i
+def cycle(lst):
+  """Returns an infinite number of items from a list, 
+  in a random order. Warning: never terminates!"""
+  while True:
+    random.shuffle(lst)
+    for i in lst:
+      yield i
 
 def pairs(lst):
   """returns first and second item,

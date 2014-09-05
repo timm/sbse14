@@ -205,7 +205,8 @@ For example, consider the following function:
 def cmdDemo(who='Tim', when=2015, where='Raleigh'):
   says(':who',who,':when',when,':where',where,nl)
 
-"""If this function is in a file with the last line:
+"""
+If this function is in a file with the last line:
 
     if __name__ == "__main__": eval(cmd())
 

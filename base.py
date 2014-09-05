@@ -47,29 +47,21 @@ The= o(cache =
            ,epsilon = 1.01 # where is close, close enough
            ,seed    = 1    # random number seed
            ,era     = 25   # pause every end of era
-           ,copyleft = """                                     _
-                                    (_)
-              |    .
-          .   |L  /|   .          _
-      _ . |\ _| \--+._/| .       (_)
-     / ||\| Y J  )   / |/| ./
-    J  |)'( |        ` F`.'/        _
-  -<|  F         __     .-<        (_)
-    | /       .-'. `.  /-. L___       
-    J \      <    \  | | O\|.-'  _   
-  _J \  .-    \/ O | | \  |F    (_) 
- '-F  -<_.     \   .-'  `-' L__    
-__J  _   _.     >-'  )._.   |-'  
-`-|.'   /_.           \_|   F    
-  /.-   .                _.<     
- /'    /.'             .'  `\     
-  /L  /'   |/      _.-'-\ 
- /'J       ___.---'\|
-   |\  .--' V  | `. `
-   |/`. `-.     `._)
-      / .-.\ 
-VK    \ (  `\ 
-       `.\ 
+           ,copyleft = """  
+         _
+        / \      _-'
+      _/|  \-''- _ /
+ __-' { |          \ 
+     /              \ 
+     /       "o.  |o }
+     |            \ ;
+                   ',
+        \_         __\ 
+          ''-_    \.//
+            / '-____'
+           / 
+         _'
+       _-'       
 
 SEARCH-BASED SE Tools
 (c) 2014, copyright BSD-3, Tim Menzies

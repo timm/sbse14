@@ -30,7 +30,7 @@ def sometimes(p) :
   "Returns True at probability 'p;"
   return p > any(0,1)
 
-def some(lst,p)  : 
+def some(lst,p=0.5)  : 
   "Returns 'p'% of a list,selected at random."
   return [x for x in lst if sometimes(p)]
 

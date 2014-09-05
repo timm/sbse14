@@ -31,10 +31,11 @@ For example, suppose this was your
 main call to an optimizer:
 
     @study
-    def saDemo(m):
+    def saDemo(model='Schaffer'):
       "Basic study."
-      print "\n",m.name()
-      sb,eb = sa(m)
+      model = eval(model + '()')
+      print "\n",model.name()
+      sb,eb = sa(model)
       x= g3(sb.x)
       y= g3(sb.y)
       print "\n------\n:e",eb,"\n:y",y,"\n:x",x
@@ -85,7 +86,7 @@ Code:
 
 """
 def study(f):
-  def wrapper(*lst):
+  def wrapper(**lst):
     rseed() # reset the seed to our default
     what = f.__name__# print the function name
     doc  = f.__doc__ # print the function doc
@@ -97,7 +98,7 @@ def study(f):
     print "#", show("%Y-%m-%d %H:%M:%S")
     if doc: print "#",doc
     t1 = time.time()
-    f(*lst)          # run the function
+    f(**lst)          # run the function
     t2 = time.time() # show how long it took to run
     print "\n" + ("-" * 50)
     showd(The)       # print the options
@@ -205,3 +206,5 @@ example you need to read up on the _In_ class
 in [models.py](modelspy), But it is easy to get the general
 idea: _In_ is something that ranges from zero to one.
 """
+
+if __name__ == "__main__": eval(cmd())

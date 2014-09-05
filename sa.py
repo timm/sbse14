@@ -98,20 +98,14 @@ Defining a study using _sa_.
 
 """
 @study
-def saDemo(m):
+def saDemo(model='Schaffer'):
   "Basic study."
-  print "\n",m.name()
-  sb,eb = sa(m)
+  model = eval(model + '()')
+  print "\n",model.name()
+  sb,eb = sa(model)
   x= g3(sb.x)
   y= g3(sb.y)
   print "\n------\n:e",eb,"\n:y",y,"\n:x",x
-"""
-
-## Demo Code
-
-"""
-saDemo(Schaffer())
-saDemo(ZDT1())
 """
 
 Output from the first call:
@@ -189,3 +183,5 @@ Output from the second call:
     
     # Runtime: 0.011 secs
 """
+
+if __name__ == "__main__": eval(cmd())

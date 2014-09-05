@@ -74,3 +74,5 @@ class ZDT1(Model):
     return it.x[0]
   def f2(i,it):
     return 1 + 9*sum(it.x[1:]) / 29
+
+if __name__ == "__main__": eval(cmd())

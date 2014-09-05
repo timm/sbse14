@@ -36,18 +36,47 @@ The= o(cache =
           o(keep    = 128 # size of sample sace
            ,pending = 4
           ),
-       misc = 
-          o(verbose = True # show stuff?
-           ,epsilon = 1.01 # where is close, close enough
-           ,seed    = 1    # random number seed
-           ,era     = 25   # pause every end of era
-          ),  
        sa =   
           o(cooling = 0.6  # cooling schedule
            ,kmax    = 1000 # max evals
            ,patience= 250  # run for at least this long
            ,baseline= 100  # initial sample size 
-          ))
+          ),
+       misc = 
+          o(verbose = True # show stuff?
+           ,epsilon = 1.01 # where is close, close enough
+           ,seed    = 1    # random number seed
+           ,era     = 25   # pause every end of era
+           ,copyleft = """                                     _
+                                    (_)
+              |    .
+          .   |L  /|   .          _
+      _ . |\ _| \--+._/| .       (_)
+     / ||\| Y J  )   / |/| ./
+    J  |)'( |        ` F`.'/        _
+  -<|  F         __     .-<        (_)
+    | /       .-'. `.  /-. L___       
+    J \      <    \  | | O\|.-'  _   
+  _J \  .-    \/ O | | \  |F    (_) 
+ '-F  -<_.     \   .-'  `-' L__    
+__J  _   _.     >-'  )._.   |-'  
+`-|.'   /_.           \_|   F    
+  /.-   .                _.<     
+ /'    /.'             .'  `\     
+  /L  /'   |/      _.-'-\ 
+ /'J       ___.---'\|
+   |\  .--' V  | `. `
+   |/`. `-.     `._)
+      / .-.\ 
+VK    \ (  `\ 
+       `.\ 
+
+SEARCH-BASED SE Tools
+(c) 2014, copyright BSD-3, Tim Menzies
+
+"""
+          )
+       )
 """
 
 Here's code to dump nested containers:
@@ -126,6 +155,10 @@ def burp(*lst):
   The.misc.verbose and say(
     ', '.join(map(str,lst)))
 
+nl="\n"
+def says(*lst):
+  say(' '.join(map(str,lst)))
+
 def say(x): 
   "Print something with no trailing new line."
   sys.stdout.write(str(x)); sys.stdout.flush()
@@ -147,3 +180,68 @@ of floats to  0, 2, or 3 decimal places (useful for condensing old reports).
 def g0(lst): return gn(lst,0)
 def g2(lst): return gn(lst,2)
 def g3(lst): return gn(lst,3)
+"""
+
+## Coercion
+
+"""
+def atom(x):
+  "String to number."
+  try : return int(x)
+  except ValueError:
+    try : return float(x)
+    except ValueError: return x
+"""
+
+### Command line processing ########################
+
+The following code lets you call any function with keyword
+defaults.
+
+For example, consider the following function:
+
+"""
+
+def cmdDemo(who='Tim', when=2015, where='Raleigh'):
+  says(':who',who,':when',when,':where',where,nl)
+
+"""If this function is in a file with the last line:
+
+    if __name__ == "__main__": eval(cmd())
+
+Then this function can be called as follows:
+
+    % python base.py  when 2010 who Jane
+
+this would print 
+
+    $ python base.py cmdDemo when 1990 who Jane
+    :who Jane :when 1990 :where Raleigh 
+
+Note that the arguments are supplied in a different
+order to those seen in the function header.  Also,
+if you do not mention some argument, it is filled in
+from the function defaults.
+
+"""
+def cmd(com='say(The.misc.copyleft)'):
+  "Convert command line to a function call."
+  if len(sys.argv) < 2: return com
+  def strp(x): return isinstance(x,basestring)
+  def wrap(x): return "'%s'"%x if strp(atom(x)) else str(x)  
+  thing=None; chars=""; sep=""; keyp=True
+  for word in sys.argv[2:]:
+    if keyp:
+      thing = word
+    else:
+      chars = chars+sep+thing+' = '+wrap(word)+' '
+      sep = ","
+    keyp = not keyp
+  chars = sys.argv[1] + '( **dict(' + chars + '))'
+  print chars
+  return chars
+
+def cmdDemo(who='Tim', when=2015, where='Raleigh'):
+  says(':who',who,':when',when,':where',where,nl)
+
+if __name__ == "__main__": eval(cmd())

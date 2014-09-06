@@ -159,7 +159,6 @@ Random tests:
 def randomed():
   seed(1)
   return ["k",one(list("mkbcdefgh"))]
-
 """
 
 ## Iterators

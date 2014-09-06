@@ -1,5 +1,7 @@
 markdown="../sbse14.wiki"
 
+all: publish commit
+
 commit:
 	- git status
 	- git commit -am "stuff"

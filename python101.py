@@ -1,11 +1,100 @@
-"""
-
-## Some Python Tricks
+"""## Some Python Tricks
 
 Some of my fav short Python tricks. No real theme, just added
 if brief and cool.
 
 Warning: dumped in quickly, not tested.
+
+## Code for Demonstrations and Tesing
+
+### Demo
+
+Trapping a set of demos.
+
+If called with no arguments, it runs all the trapped
+demos.
+
+If called with no arguments _demo('-h')_, then it is
+prints a list of the demos.
+
+If called as a decorator, it traps the decorated
+function. e.g.
+
+    @demo
+    def demoed(show=1):
+      "Sample demo."
+      print show/2
+
+"""
+def demo(f=None,demos=[]): 
+  def demoDoc(d):
+    return '# '+d.__doc__+"\n" if d.__doc__ else ""  
+  if f == '-h':
+    for d in demos: 
+      print d.func_name+'()', demoDoc(d)
+  if f: demos.append(f); return f
+  s='|'+'='*40 +'\n'
+  for d in demos: 
+    print '\n==|',d.func_name,s,demoDoc(d),d()
+"""
+
+### Test
+
+Run a set of tests, each of which returns a pair of
+_want,got_.  Counts the number of time a test
+is "passed" (i.e. _want == got_) or "failed"
+(i.e. _want != got_).
+
+If called with no arguments, it runs all the tests.
+
+If called as a decorator, it traps the test.
+
+"""
+def test(f=None,cache=[]):
+  if f: 
+    cache += [f]
+    return f
+  ok = no = 0
+  for t in cache: 
+    print '#',t.func_name ,t.__doc__ or ''
+    prefix, n, found = None, 0, t() or []
+    while found:
+      this, that = found.pop(0), found.pop(0)
+      if this == that:
+        ok, n, prefix = ok+1, n+1,'CORRECT:'
+      else: 
+        no, n, prefix = no+1, n+1,'WRONG  :'
+      print prefix,t.func_name,'test',n
+  if ok+no:
+    print '\n# Final score: %s/%s = %s%% CORRECT' \
+        % (ok,(ok+no),int(100*ok/(ok+no)))
+"""
+
+E.g.
+
+"""
+@test
+def tested1():
+  "Demo of basic testing."
+  return [True,True,  # should pass
+          False,True, # should fail
+          1, 2/2]     # should pass
+@test
+def tested2():
+  "Yet another demo of basic testing."
+  return [10,20]      # should fail
+"""
+
+If the _test()_ is called after the above then we will see
+
+     tested1 Demo of basic testing.
+     CORRECT: tested1 test 1
+     WRONG  : tested1 test 2
+     CORRECT: tested1 test 3
+     # tested2 Yet another demo of basic testing.
+     WRONG  : tested2 test 1
+      
+     # Final score: 2/4 = 50% CORRECT
 
 ## Type Coercion
 
@@ -20,6 +109,10 @@ def atom(x):
     try: return float(x)
     except ValueError:
       return x
+
+@test
+def atomed():
+  return [1,atom("1")]
 """
 
 ## Random Stuff
@@ -59,6 +152,16 @@ def one(lst):
   return lst[  int(any(0,len(lst) - 1)) ] 
 """
 
+Random tests:
+
+"""
+@test
+def randomed():
+  seed(1)
+  return ["k",one(list("mkbcdefgh"))]
+
+"""
+
 ## Iterators
 
 ### Item
@@ -71,6 +174,11 @@ def item(x) :
     for y in x:
       for z in item(y): yield z
   else: yield x
+
+@test
+def itemed():
+  return [19,
+          sum(x for x in item([1,[[3,4],5],[6]]))]
 """
 
 ### Cycle
@@ -79,11 +187,19 @@ Returns an infinite number of items from a list,
 in a random order. Warning: never terminates!
  
 """
-def cycle(lst):
-  while True:
+def cycle(lst,max=10**32):
+  while True and max > 0:
     random.shuffle(lst)
     for i in lst:
       yield i
+      max -= 1
+      if max < 0: break
+
+@test
+def cycled():
+  seed(1)
+  return [[2,5,3,4,1,2,1,4,5,3,1,5,4,3,2,2,4,5,1,3]
+        ,[x for x in cycle([1,2,3,4,5],20)]]
 """
 
 ### Pairs
@@ -104,6 +220,12 @@ def pairs(lst):
   for i in lst[1:]:
     yield last,i
     last = i
+
+@test
+def paired():
+  return [2.5,
+          sum([(y-x)*1.0/x for x,y 
+               in pairs([10,20,20,20,10,30])])]
 """
 
 ### Rows
@@ -160,3 +282,12 @@ def some(d,enough=10**32):
         yield thing
         enough -= 1
         break
+
+@test
+def somed():
+  seed(1)
+  return [['box','line',  'circle','box','box', 
+           'box','circle','circle','box','box'],
+          [x for x in 
+           some({'box':30,'circle':20,'line':10},
+                 10)]]

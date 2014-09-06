@@ -3,7 +3,8 @@
 Some of my fav short Python tricks. No real theme, just added
 if brief and cool.
 
-Warning: dumped in quickly, not tested.
+Code comes with test samples (see the _@test_ entries, below).
+
 
 ## Code for Demonstrations and Tesing
 

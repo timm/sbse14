@@ -33,7 +33,7 @@ For example, here are the options used in this code.
 
 """
 The= o(cache = 
-          o(keep    = 128 # size of sample sace
+          o(keep    = 128  # size of sample sace
            ,pending = 4
           ),
        sa =   
@@ -47,24 +47,27 @@ The= o(cache =
            ,epsilon = 1.01 # where is close, close enough
            ,seed    = 1    # random number seed
            ,era     = 25   # pause every end of era
-           ,copyleft = """  
-         _
-        / \      _-'
-      _/|  \-''- _ /
- __-' { |          \ 
-     /              \ 
-     /       "o.  |o }
-     |            \ ;
-                   ',
-        \_         __\ 
-          ''-_    \.//
-            / '-____'
-           / 
-         _'
-       _-'       
+           ,repeats = 20   # repeated run
+           ,a12     = 0.66 # a12 threshold 
+           ,early   = True # early stopping
+           ,copyleft = 
+ """           _
+          / \      _-'
+        _/|  \-''- _ /
+   __-' { |          \ 
+       /              \ 
+       /       "o.  |o }
+       |            \ ;
+                     ',
+          \_         __\ 
+            ''-_    \.//
+              / '-____'
+             / 
+           _'
+         _-'       
 
-SEARCH-BASED SE Tools
-(c) 2014, copyright BSD-3, Tim Menzies
+ SEARCH-BASED SE Tools
+ (c) 2014, copyright BSD-3, Tim Menzies
 
  """
           )
@@ -111,6 +114,16 @@ def pairs(lst):
     last = i
 """
 
+### Timing Stuff
+
+"""
+def msecs(f):
+  import time
+  t1 = time.time()
+  f()
+  return (time.time() - t1) * 1000
+"""
+
 ### Random Stuff
 
 """
@@ -119,7 +132,7 @@ any=   random.choice # pull any from list
 
 def rseed(seed = None):
   seed = seed or The.misc.seed
-  random.seed(seed)
+  random.seed(seed) 
 """
 
 The above example shows a use of a global option.
@@ -223,9 +236,6 @@ def _tileX() :
   random.seed(1)
   nums = [random.random()**2 for _ in range(100)]
   print xtile(nums,lo=0,hi=1.0,width=25,show=" %3.2f")
-
-_tileX();exit()
-
 """
 
 ## Coercion
@@ -287,7 +297,6 @@ def cmd(com='say(The.misc.copyleft)'):
       sep = ","
     keyp = not keyp
   chars = sys.argv[1] + '( **dict(' + chars + '))'
-  print chars
   return chars
 
 def cmdDemo(who='Tim', when=2015, where='Raleigh'):

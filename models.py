@@ -60,7 +60,7 @@ dependent values (in "_y_").
 class Schaffer(Model):
   def spec(i):
     return o(x= [In(-5,5,0)],
-              y= [i.f1,i.f2])
+             y= [i.f1,i.f2])
   def f1(i,it):
     x=it.x[0]; return x**2
   def f2(i,it):

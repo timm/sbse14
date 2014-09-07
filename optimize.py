@@ -155,8 +155,6 @@ So, two solutions to this:
 That said, say hello to my little friend:
 
 """
-
-
 class Model:
   def name(i): 
     return i.__class__.__name__
@@ -165,6 +163,8 @@ class Model:
     i.of = i.spec()
     i.log= o(x= [of1.log() for of1 in i.of.x],
              y= [Num()     for _   in i.of.y])
+  def cloneIT(i):
+    return i.__class__()
   def indepIT(i):
     "Make new it."
     return o(x=[generate() for generate in i.of.x])
@@ -205,6 +205,47 @@ Note that to completely understand the above
 example you need to read up on the _In_ class
 in [models.py](modelspy), But it is easy to get the general
 idea: _In_ is something that ranges from zero to one.
+
+## Optimization Control
+
 """
+class Watch(object):
+  def __iter__(i): 
+    return i
+  def __init__(i,most,model,history=None):
+    i.early   = The.misc.early  
+    i.history = {} if history == None else history
+    i.log     = {}
+    i.most, i.model = most, model
+    i.step, i.era  = 1,1
+  def record(i,result):
+    """ Each recorded result is one clock tick.
+        Record all results in log and history"""
+    both = [i.history, i.log]     
+    for log in both:
+      if not i.era in log:
+        log[i.era] = i.model.clone()
+    i.step += 1
+    for log in both:
+      log[i.era].record(result)
+  def stop(i):
+    """if more than two eras, suggest
+       stopping if no improvement."""
+    if len(i.log) >= The.misc.early:
+      now = i.era
+      before = now - The.misc.era
+      if i.log[now].same(i.log[before]):
+        return True
+    return False
+  def next(i):
+    "return next time tick, unless we need to halt."
+    if i.step > i.most: # end of run!
+      raise StopIteration()
+    if i.step >= i.era:     # pause to reflect
+      if i.early > 0:     # maybe exit early
+        if i.stop():        
+           raise StopIteration()
+      i.era += The.misc.era   # set next pause point
+    return i.step,i
 
 if __name__ == "__main__": eval(cmd())

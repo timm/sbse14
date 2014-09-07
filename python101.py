@@ -62,28 +62,28 @@ def test(f=None,cache=[]):
     while found:
       this, that = found.pop(0), found.pop(0)
       if this == that:
-        ok, n, prefix = ok+1, n+1,'CORRECT:'
+        ok, n, prefix = ok+1, n+1,'# CORRECT :'
       else: 
-        no, n, prefix = no+1, n+1,'WRONG  :'
+        no, n, prefix = no+1, n+1,'# WRONG   :'
       print prefix,t.func_name,'test',n
   if ok+no:
     print '\n# Final score: %s/%s = %s%% CORRECT' \
-        % (ok,(ok+no),int(100*ok/(ok+no)))
+           % (ok,(ok+no),int(100*ok/(ok+no)))
 """
 
 E.g.
 
 """
 @test
+def tested0():
+  "Demo of a failing test"
+  return [False,True]
+
+@test
 def tested1():
   "Demo of basic testing."
   return [True,True,  # should pass
-          False,True, # should fail
           1, 2/2]     # should pass
-@test
-def tested2():
-  "Yet another demo of basic testing."
-  return [10,20]      # should fail
 """
 
 If the _test()_ is called after the above then we will see
@@ -159,7 +159,11 @@ Random tests:
 @test
 def randomed():
   seed(1)
-  return ["k",one(list("mkbcdefgh"))]
+  lst = list("mkbcdefgh")
+  return ["k",one(lst)
+         ,['b', 'c', 'd', 'g', 'h'], some(lst)
+         ]
+
 """
 
 ## Iterators
@@ -253,7 +257,10 @@ def rows(file, n=0, bad=r'["\' \t\r\n]',sep=',',wrapper=noop) :
         yield n,map(wrapper,line)
 """
 
-### Some
+### Often
+
+Generate often seen things most often 
+while generating rarer this more rarely.
 
 Given a dictionary d{k1=n1, k2=n2, ...},
   return enough keys ki at probability 
@@ -268,7 +275,7 @@ will return around twice as many boxes as anything else,
 
 
 """
-def some(d,enough=10**32):
+def often(d,enough=10**32):
   n, lst = 0, []
   for x in d: 
     n   += d[x]
@@ -284,10 +291,12 @@ def some(d,enough=10**32):
         break
 
 @test
-def somed():
+def oftend():
   seed(1)
   return [['box','line',  'circle','box','box', 
            'box','circle','circle','box','box'],
           [x for x in 
-           some({'box':30,'circle':20,'line':10},
+           often({'box':30,'circle':20,'line':10},
                  10)]]
+
+test()

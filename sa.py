@@ -100,6 +100,9 @@ Defining a study using _sa_.
 @study
 def saDemo(model='Schaffer'):
   "Basic study."
+  The.misc.verbose= True
+  The.misc.era = 25
+  print "!!!",model
   model = eval(model + '()')
   print "\n",model.name()
   sb,eb = sa(model)

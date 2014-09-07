@@ -100,7 +100,7 @@ def study(f):
     t1 = time.time()
     f(**lst)          # run the function
     t2 = time.time() # show how long it took to run
-    print "\n" + ("-" * 50)
+    print "\n" + ("-" * 72)
     showd(The)       # print the options
     print "\n# Runtime: %.3f secs" % (t2-t1)
   return wrapper
@@ -163,6 +163,11 @@ class Model:
     i.of = i.spec()
     i.log= o(x= [of1.log() for of1 in i.of.x],
              y= [Num()     for _   in i.of.y])
+  def better(i,j):
+    for di,dj in zip(i.log.y, j.log.y):
+      if di.better(dj):
+        return True
+    return False
   def cloneIT(i):
     return i.__class__()
   def indepIT(i):
@@ -212,40 +217,58 @@ idea: _In_ is something that ranges from zero to one.
 class Watch(object):
   def __iter__(i): 
     return i
-  def __init__(i,most,model,history=None):
+  def __init__(i,model,history=None):
     i.early   = The.misc.early  
     i.history = {} if history == None else history
     i.log     = {}
-    i.most, i.model = most, model
+    i.most, i.model = The.sa.kmax, model
     i.step, i.era  = 1,1
-  def record(i,result):
+  def logIT(i,result):
     """ Each recorded result is one clock tick.
         Record all results in log and history"""
     both = [i.history, i.log]     
     for log in both:
       if not i.era in log:
-        log[i.era] = i.model.clone()
+        log[i.era] = i.model.cloneIT()
     i.step += 1
     for log in both:
-      log[i.era].record(result)
+      log[i.era].logIT(result)
   def stop(i):
     """if more than two eras, suggest
        stopping if no improvement."""
     if len(i.log) >= The.misc.early:
+      #print 3
       now = i.era
       before = now - The.misc.era
-      if i.log[now].same(i.log[before]):
+      beforeLog = i.log[before]
+      nowLog    = i.log[now]
+      if not nowLog.better(beforeLog):
+        #print 4
         return True
     return False
   def next(i):
     "return next time tick, unless we need to halt."
     if i.step > i.most: # end of run!
       raise StopIteration()
-    if i.step >= i.era:     # pause to reflect
+    if i.step >= i.era:   # pause to reflect
+      #print 1, i.step, i.era
       if i.early > 0:     # maybe exit early
+        #print 2
         if i.stop():        
            raise StopIteration()
       i.era += The.misc.era   # set next pause point
     return i.step,i
+
+def optimizeReport(m,history):
+  for z,header in enumerate(m.log.y):
+    print "\nf%s" % z
+    for era in sorted(history.keys()):
+      log = history[era].log.y[z]
+      log.has()
+      print str(era-1).rjust(7),\
+            xtile(log._cache,
+                  width=33,
+                  show="%5.2f",
+                  lo=0,hi=1)
 
 if __name__ == "__main__": eval(cmd())

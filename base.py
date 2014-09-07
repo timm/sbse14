@@ -32,26 +32,8 @@ class o:
 For example, here are the options used in this code.
 
 """
-The= o(cache = 
-          o(keep    = 128  # size of sample sace
-           ,pending = 4
-          ),
-       sa =   
-          o(cooling = 0.6  # cooling schedule
-           ,kmax    = 1000 # max evals
-           ,patience= 250  # run for at least this long
-           ,baseline= 100  # initial sample size 
-          ),
-       misc = 
-          o(verbose = True # show stuff?
-           ,epsilon = 1.01 # where is close, close enough
-           ,seed    = 1    # random number seed
-           ,era     = 25   # pause every end of era
-           ,repeats = 20   # repeated run
-           ,a12     = 0.66 # a12 threshold 
-           ,early   = True # early stopping
-           ,copyleft = 
- """           _
+def logo():
+  print """           _
           / \      _-'
         _/|  \-''- _ /
    __-' { |          \ 
@@ -65,11 +47,29 @@ The= o(cache =
              / 
            _'
          _-'       
-
- SEARCH-BASED SE Tools
- (c) 2014, copyright BSD-3, Tim Menzies
-
- """
+  """
+  print The.misc.copyleft
+  
+The= o(cache = 
+          o(keep    = 128  # size of sample sace
+           ,pending = 4
+          ),
+       sa =   
+          o(cooling = 0.6  # cooling schedule
+           ,kmax    = 1000 # max evals
+           ,patience= 2000  # run for at least this long
+           ,baseline= 100  # initial sample size 
+          ),
+       misc = 
+          o(verbose = False # show stuff?
+           ,epsilon = 1.01 # where is close, close enough
+           ,seed    = 1    # random number seed
+           ,era     = 100  # pause every end of era
+           ,repeats = 30   # repeated run
+            ,a12    = [0.6, 0.67, 0.71][0]  # a12 threshold 
+           ,early   = 4  # early stopping
+           ,copyleft= """ SEARCH-BASED SE Tools
+ (c) 2014, copyright BSD-3, Tim Menzies"""
           )
        )
 """
@@ -201,7 +201,7 @@ Printing a xtile chart.
 
 """
 
-def xtile(lst,lo=0,hi=100,width=50,
+def xtile(lst,lo=0,hi=0.001,width=50,
              chops=[0.1 ,0.3,0.5,0.7,0.9],
              marks=["-" ," "," ","-"," "],
              bar="|",star="*",show=" %3.0f"):
@@ -283,7 +283,7 @@ if you do not mention some argument, it is filled in
 from the function defaults.
 
 """
-def cmd(com='say(The.misc.copyleft)'):
+def cmd(com='logo()'):
   "Convert command line to a function call."
   if len(sys.argv) < 2: return com
   def strp(x): return isinstance(x,basestring)

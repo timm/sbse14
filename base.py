@@ -13,6 +13,28 @@ sys.dont_write_bytecode = True
 """
 ## Misc Stuff
 
+### Everyone needs a logo
+
+"""
+def logo():
+  print """       
+                                 _.      
+                        _.-----'' `\ 
+            __..-----'''            `.
+           <            `\.           '\ 
+           :.              `.           `\ 
+            `:.              `.           `-.
+              `:\ S  D     e   .             +.
+                `:. e  o  d     `.  __.===::::;)
+          r   B   `: c       ___.__>'::::::a:f/'
+     e          a   `.  _,===:::=-'-=-\"\"\"''
+ s      a  b         '-/:::''
+                       ''
+          c
+  """
+  print The.misc.copyleft
+"""
+
 ### Options Handling
 
 Place to store things and stuff.
@@ -32,24 +54,10 @@ class o:
 For example, here are the options used in this code.
 
 """
-def logo():
-  print """           _
-          / \      _-'
-        _/|  \-''- _ /
-   __-' { |          \ 
-       /              \ 
-       /       "o.  |o }
-       |            \ ;
-                     ',
-          \_         __\ 
-            ''-_    \.//
-              / '-____'
-             / 
-           _'
-         _-'       
-  """
-  print The.misc.copyleft
-  
+def small(l)  : return (l[0]+l[1])*0.5
+def medium(l) : return (l[1]+l[2])*0.5
+def large(l)  : return (l[2]+l[3])*0.5
+
 The= o(cache = 
           o(keep    = 128  # size of sample sace
            ,pending = 4
@@ -66,7 +74,7 @@ The= o(cache =
            ,seed    = 1    # random number seed
            ,era     = 100  # pause every end of era
            ,repeats = 30   # repeated run
-            ,a12    = [0.6, 0.67, 0.71][0]  # a12 threshold 
+           ,a12     = small([0.56, 0.64, 0.71])  # a12 threshold 
            ,early   = 4  # early stopping
            ,copyleft= """ SEARCH-BASED SE Tools
  (c) 2014, copyright BSD-3, Tim Menzies"""

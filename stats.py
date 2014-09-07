@@ -3,19 +3,17 @@ import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
 from base import *
 
-def a12cmp(x,y):
-  if y - x > 0 : return 1
-  if y - x < 0 : return -1
-  else: return 0
 
-def a12(lst1,lst2, gt= a12cmp):
-  "how often is x in lst1 more than y in lst2?"
+
+def a12(lst1,lst2):
+  """how often is lst1 often more than y in lst2?
+  assumes lst1 nums are meant to be greater than lst2"""
   def loop(t,t1,t2): 
     while t1.m < t1.n and t2.m < t2.n:
       h1 = t1.l[t1.m]
       h2 = t2.l[t2.m]
       h3 = t2.l[t2.m+1] if t2.m+1 < t2.n else None 
-      if gt(h1,h2) < 0:
+      if h1 > h2:
         t1.m  += 1; t1.gt += t2.n - t2.m
       elif h1 == h2:
         if h3 and gt(h1,h3) < 0:
@@ -25,8 +23,8 @@ def a12(lst1,lst2, gt= a12cmp):
         t2,t1  = t1,t2
     return t.gt*1.0, t.eq*1.0
   #--------------------------
-  lst1 = sorted(lst1, cmp=gt)
-  lst2 = sorted(lst2, cmp=gt)
+  lst1 = sorted(lst1,reverse=True)
+  lst2 = sorted(lst2,reverse=True)
   n1   = len(lst1)
   n2   = len(lst2)
   t1   = o(l=lst1,m=0,eq=0,gt=0,n=n1)
@@ -37,10 +35,13 @@ def a12(lst1,lst2, gt= a12cmp):
 def _ab12():
   random.seed(1)
   l1 = [random.random() for x in range(1000)]
-  l2 = [random.random() for x in range(1000)]
-  l3 = [random.random()*2 for x in range(1000)]
-  t1 = msecs(lambda : a12(l1,l2))
-  print ':msecs',t1,":a12", a12(l3,l1)
+  more = [random.random()*2 for x in range(1000)]
+  l2 = [random.random()  for x in range(1000)]
+  less = [random.random()/2.0 for x in range(1000)]
+  t1 = msecs(lambda : a12(l1,more))
+  print t1,a12(l2,less)
+
+    
 
 def scottknott(data,cohen=0.3,small=3, useA12=False,epsilon=0.01):
   """Recursively split data, maximizing delta of

@@ -26,12 +26,13 @@ def sa(m):
       en = mron(energy(m,sn), base.lo, base.hi)
       log.logIT(sn)
       t = (k/The.sa.kmax)**The.sa.cooling
+      if en > (eb * The.misc.epsilon):
+        sb,eb = sn,en
       if en >  (e * The.misc.epsilon):
         s,e = sn,en
       elif maybe(e,en,t):
         s,e = sn,en
-      if en > (eb * The.misc.epsilon):
-        sb,eb = sn,en
+     
   return optimizeReport(m,history)
 
 @study

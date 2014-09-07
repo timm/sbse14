@@ -298,5 +298,11 @@ def oftend():
           [x for x in 
            often({'box':30,'circle':20,'line':10},
                  10)]]
+"""
 
+### And Finally...
+
+Lets see how all that runs:
+
+"""
 test()

@@ -116,6 +116,25 @@ def atomed():
   return [1,atom("1")]
 """
 
+## Maths Stuff
+
+"""
+def median(lst,ordered=False):
+  lst = lst if ordered else sorted(lst)
+  n   = len(lst)
+  p   = n // 2
+  if (n % 2):  return lst[p]
+  p,q = p-1,p
+  q   = max(0,(min(q,n)))
+  return (lst[p] + lst[q]) * 0.5
+
+@test
+def _median():
+  print median([1,2,3,4,5])
+  print median([1,2,3,4])
+
+"""
+
 ## Random Stuff
 
 Standard headers for random stuff

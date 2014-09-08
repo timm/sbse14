@@ -208,7 +208,6 @@ def g3(lst): return gn(lst,3)
 ### Printing a xtile chart.
 
 """
-
 def xtile(lst,lo=0,hi=0.001,width=50,
              chops=[0.1 ,0.3,0.5,0.7,0.9],
              marks=["-" ," "," ","-"," "],
@@ -242,8 +241,7 @@ def xtile(lst,lo=0,hi=0.001,width=50,
 
 For example, the example displays 1000 random numbers as follows:
 
-   ---   *     |------      , 0.01,  0.15,  0.26,  0.52,  0.79
-
+    ---   *     |------      , 0.01,  0.15,  0.26,  0.52,  0.79
 
 """
 def _tileX() :

@@ -163,11 +163,18 @@ class Model:
     i.of = i.spec()
     i.log= o(x= [of1.log() for of1 in i.of.x],
              y= [Num()     for _   in i.of.y])
-  def better(i,j):
-    for di,dj in zip(i.log.y, j.log.y):
-      if di.better(dj):
-        return True
-    return False
+  def better(news,olds):
+    def worsed():
+      return  ((same     and not betterIqr) or 
+               (not same and not betterMed))
+    def bettered():
+      return not same and betterMed
+    out = False
+    for n,(new,old) in enumerate(zip(news.log.y, olds.log.y)):
+      betterMed, same, betterIqr = new.better(old)
+      if worsed()  : return False # never any worsed
+      if bettered(): out= out or True # at least one bettered
+    return out
   def cloneIT(i):
     return i.__class__()
   def indepIT(i):

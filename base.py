@@ -168,42 +168,6 @@ def norm(x,lo,hi):
 def mron(x,lo,hi):
   "Generate a num 1..0 for lo..hi"
   return 1 - norm(x,lo,hi)
-
-def a12(lst1,lst2):
-  """how often is lst1 often more than y in lst2?
-  assumes lst1 nums are meant to be greater than lst2"""
-  def loop(t,t1,t2): 
-    while t1.m < t1.n and t2.m < t2.n:
-      h1 = t1.l[t1.m]
-      h2 = t2.l[t2.m]
-      h3 = t2.l[t2.m+1] if t2.m+1 < t2.n else None 
-      if h1 > h2:
-        t1.m  += 1; t1.gt += t2.n - t2.m
-      elif h1 == h2:
-        if h3 and gt(h1,h3) < 0:
-            t1.gt += t2.n - t2.m  - 1
-        t1.m  += 1; t1.eq += 1; t2.eq += 1
-      else:
-        t2,t1  = t1,t2
-    return t.gt*1.0, t.eq*1.0
-  #--------------------------
-  lst1 = sorted(lst1,reverse=True)
-  lst2 = sorted(lst2,reverse=True)
-  n1   = len(lst1)
-  n2   = len(lst2)
-  t1   = o(l=lst1,m=0,eq=0,gt=0,n=n1)
-  t2   = o(l=lst2,m=0,eq=0,gt=0,n=n2)
-  gt,eq= loop(t1, t1, t2)
-  return gt/(n1*n2) + eq/2/(n1*n2)
-
-def _ab12():
-  random.seed(1)
-  l1 = [random.random() for x in range(1000)]
-  more = [random.random()*2 for x in range(1000)]
-  l2 = [random.random()  for x in range(1000)]
-  less = [random.random()/2.0 for x in range(1000)]
-  t1 = msecs(lambda : a12(l1,more))
-  print t1,a12(l2,less)
 """
 
 ### Printing stuff
@@ -241,7 +205,7 @@ def g2(lst): return gn(lst,2)
 def g3(lst): return gn(lst,3)
 """
 
-Printing a xtile chart.
+### Printing a xtile chart.
 
 """
 
@@ -274,7 +238,14 @@ def xtile(lst,lo=0,hi=0.001,width=50,
   out[int(width/2)]    = bar
   out[place(pos(0.5))] = star 
   return ''.join(out) +  "," +  pretty(what)
+"""
 
+For example, the example displays 1000 random numbers as follows:
+
+   ---   *     |------      , 0.01,  0.15,  0.26,  0.52,  0.79
+
+
+"""
 def _tileX() :
   import random
   random.seed(1)
@@ -292,8 +263,6 @@ def atom(x):
     try : return float(x)
     except ValueError: return x
 """
-
-
 
 ### Command line processing ########################
 

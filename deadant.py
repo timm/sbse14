@@ -46,7 +46,6 @@ rand = random.random
 def say(*lst):
   sys.stdout.write(','.join(lst))
 
-
 nl="\n"
 
 def cmd(com="say(logo)"):

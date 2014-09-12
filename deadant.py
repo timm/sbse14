@@ -1,33 +1,81 @@
+from __future__ import division
+import re,sys,rand
+sys.dont_write_bytecode = True
+
+logo="""
+        _.._.-..-._
+     .-'  .'  /\  \`._
+    /    /  .'  `-.\  `.
+        :_.'  ..    :       _.../\ 
+        |           ;___ .-'   //\\.
+         \  _..._  /    `/\   //  \\\ 
+          `-.___.-'  /\ //\\       \\:
+               |    //\V/ :\\       \\ 
+                \      \\/  \\      /\\ 
+                 `.____.\\   \\   .'  \\ 
+                   //   /\\---\\-'     \\ 
+             fsc  //   // \\   \\       \\ 
+
+ DeadAnt (c) 2014, Tim Menzies
+ Tabu-based ant colony optimizer.
+ """
+
 class o():
   def __init__(i,**d): i.has().update(d)
-  def has(i)         : return i.__dict__
-  def __repr__(i)    : return showd(i.has(),
-                                i.__class__.__name__)
-   
-def showd(d,name=""):
-   def show(i): return [k for k in sorted(d.keys()) 
-                        if not "_" in k]
-   return name+'{'+' '.join([ ':%s %s' % (k,i.d[k])
-                           for k in i.show()])) + '}'
- 
+  def has(i)  : return i.__dict__
+  def items(i): return i.has().items()
+  def show(i) : 
+    print i.__class__.__name__
+    pretty(i.has(),1)
+
+The = o(misc= o(fred=1,
+                jane=2,
+                maths=o(ll=1,
+                        mm=3)))
+
+def pretty(d, indent=0):
+  for key, value in d.items():
+    if key[0] != "_":
+      print '    ' * indent + str(key)
+      if isinstance(value, (dict,o)):
+         pretty(value, indent+1)
+      else:
+         print '    ' * (indent+1) + str(value)
+
+rand = random.random
+def say(*lst):
+  sys.stdout.write(','.join(lst))
+
+
+nl="\n"
+
+def cmd(com="say(logo)"):
+  "Convert command line to a function call."
+  if len(sys.argv) < 2: return com
+  def strp(x): return isinstance(x,basestring)
+  def wrap(x): return "'%s'"%x if strp(x) else str(x)  
+  def value(x):
+    try:    return eval(x)
+    except: return x
+  def pair(x):
+    lst = re.split("=",x)
+    return lst[0] +"="+ wrap(value(lst[1]))
+  words = map(pair, sys.argv[2:])
+  return sys.argv[1]+'(**dict('+ ','.join(words)+'))'
+
 class Close():
-  enough = 20
-  tiny   = 0.05
+  big, tiny = 20, 0.05
   def __init__(i):
-    i.sum = [0.0] * 32
-    i.pop = [0.0] * 32
+    i.sum, i.n = [0.0]*32, [0.0]*32
   def keep(i,x):
     for j in xrange(len(i.sum)):
       i.sum[j] += x
-      i.pop[j] += 1
-      mu   = i.sum[j] / i.pop[j]
-      here = i.pop[j] / i.pop[0]
-      if i.pop[j] < Close.enough:
-        return False
-      if here < Close.tiny:
-        return True
-      if x > mu:
-        return False 
+      i.n[j]   += 1
+      mu        = i.sum[j] / i.n[j]
+      here      = i.n[j]  / i.n[0]
+      if i.n[j] < Close.big  : return False
+      if here   < Close.tiny : return True
+      if x > mu              : return False 
 
 def _close():
   import random
@@ -40,31 +88,37 @@ def _close():
          if c.keep(rand())]
   print sum(lst)/n
 
-def lohi(tbl):
-  def keep(col,x):
-    lo[col] = min(lo[col], x)
-    hi[col] = max(hi[col], x)
-    return n
-  def norm(col,x):
-    return (x - lo[col])/(hi[col] - lo[col] + 0.0001)
-  lo = [ 10**32] * len(tbl.indep)
-  hi = [-10**32] * len(tbl.indep)
-  for n,row in enumerate(tbl.data):
-    tbl.data[n] = [keep(col,x) 
-                   for col,x in enumerate(row)] 
-  for n,row in enumerate(tbl.data):
-    tbl.data[n] = [norm(col,x) 
-                   for col,x in enumerate(row)] 
-  return tbl
-
-@lohi
+class Table(o):
+  def __init__(i,**d):
+    i.has().update(d)
+    i.lo = [ 10**32] * i.klass
+    i.hi = [-10**32] * i.klass
+    for r,row in enumerate(i._data):
+      i._data[r] = i.keeps(row)
+    d._data = []
+    i.clone = d 
+  def keeps(i,row):
+    return [i.keep(c,row[c]) 
+            for c in range(i.klass)]
+  def keep(i,c,x):
+    i.lo[c] = min(i.lo[c], x)
+    i.hi[c] = max(i.hi[c], x)
+    return x
+  def norm(i,c,x):
+    return (x - i.lo[c])/(
+            i.hi[c] - i.lo[c] + 0.0001)
+  def any1(i,c): 
+    return lo[c] + rand()*(hi[c] - lo[c])
+  def any(i): 
+    return [i.any1(c) for c in range(i.klass)]
+  
+    
 def nasa93():
   vl=1;l=2;n=3;h=4;vh=5;xh=6
-  return o(
+  return Table(
     sfem  = 21,
     kloc  = 22,
     klass = 23,
-    indep = range(klass)
     names = [ 
      # 0..8
      'Prec', 'Flex', 'Resl', 'Team', 'Pmat', 'rely', 'data', 'cplx', 'ruse',
@@ -72,7 +126,7 @@ def nasa93():
      'docu', 'time', 'stor', 'pvol', 'acap', 'pcap', 'pcon', 'aexp', 'plex',  
      # 18 .. 25
      'ltex', 'tool', 'site', 'sced', 'kloc', 'effort', '?defects', '?months'],
-    data=[
+    _data=[
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,25.9,117.6,808,15.3],
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,24.6,117.6,767,15.0],
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,7.7,31.2,240,10.1],
@@ -165,9 +219,10 @@ def nasa93():
 	[h,h,h,vh,h,vh,h,vh,n,n,xh,xh,n,h,h,n,h,h,h,n,n,n,233,8211,8848,53.1],
 	[h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,16.3,480,1253,21.5],
 	[h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,  6.2, 12,477,15.4],
-	[h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,  3.0, 38,231,12.0],
-	])
+	[h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,  3.0, 38,231,12.0]	
+  ])
 
 
 
-_close()
+nasa93().show()
+if __name__ == '__main__': eval(cmd())

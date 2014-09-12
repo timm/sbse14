@@ -110,8 +110,7 @@ class Table(o):
     return lo[c] + rand()*(hi[c] - lo[c])
   def any(i): 
     return [i.any1(c) for c in range(i.klass)]
-  
-    
+
 def nasa93():
   vl=1;l=2;n=3;h=4;vh=5;xh=6
   return Table(

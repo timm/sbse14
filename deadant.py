@@ -1,5 +1,5 @@
 from __future__ import division
-import re,sys,rand
+import re,sys,random
 sys.dont_write_bytecode = True
 
 logo="""
@@ -20,15 +20,21 @@ logo="""
  Tabu-based ant colony optimizer.
  """
 
-class o():
-  def __init__(i,**d): i.has().update(d)
+class o(object):
+  def __init__(i,**d): 
+    i.has().update(d)
   def has(i)  : return i.__dict__
   def items(i): return i.has().items()
+  def __getitem__(i, k): return i.has()[k]
+  def __setitem__(i, k, v): i.has()[k]=v
+  def __repr__(i):
+    return i.__class__.__name__+str(i.has())
   def show(i) : 
     print i.__class__.__name__
     pretty(i.has(),1)
 
-The = o(misc= o(fred=1,
+The = o(cache = o(keep=256),
+        misc= o(fred=1,
                 jane=2,
                 maths=o(ll=1,
                         mm=3)))
@@ -43,6 +49,7 @@ def pretty(d, indent=0):
          print '    ' * (indent+1) + str(value)
 
 rand = random.random
+any  = random.choice
 def say(*lst):
   sys.stdout.write(','.join(lst))
 
@@ -87,44 +94,156 @@ def _close():
          if c.keep(rand())]
   print sum(lst)/n
 
-class Table(o):
-  def __init__(i,**d):
-    i.has().update(d)
-    i.lo = [ 10**32] * i.klass
-    i.hi = [-10**32] * i.klass
-    for r,row in enumerate(i._data):
-      i._data[r] = i.keeps(row)
-    d._data = []
-    i.clone = d 
-  def keeps(i,row):
-    return [i.keep(c,row[c]) 
-            for c in range(i.klass)]
-  def keep(i,c,x):
-    i.lo[c] = min(i.lo[c], x)
-    i.hi[c] = max(i.hi[c], x)
+class Header(o): 
+  id=0
+  def __init__(i,name=None):
+    if not name:
+      id   = Header.id = Header.id + 1
+      name = 'var%s' % id
+    i.skip, i.name = False, name
+  def __repr__(i):
+    return i.__class__.__name__+'('+i.name+')'
+  def clone(i):
+    return i.__class__(name=i.name)
+class Num(Header): 
+  def __init__(i, name=None):
+     super(Num,i).__init__(name=name)
+     i.lo, i.hi = 10**32, -10**32
+     i.cache = Cache()
+  def log(i,x):
+    i.lo = min(i.lo,x)
+    i.hi = max(i.hi,x)
+    i.cache += x
     return x
-  def norm(i,c,x):
-    return (x - i.lo[c])/(
-            i.hi[c] - i.lo[c] + 0.0001)
-  def any1(i,c): 
-    return lo[c] + rand()*(hi[c] - lo[c])
-  def any(i): 
-    return [i.any1(c) for c in range(i.klass)]
+  def ako(i): 
+    return ['nums','indep']
+  def any(i):
+    return i.lo + (i.hi - i.lo)*rand()
+class Less(Num):
+  def ako(i): return ['nums','less','depen']
+class More(Num):
+  def ako(i): return ['nums','more','depen']
+ 
+def Skip(x):
+  x.skip=True
+  return x
 
+class Sym(Header):
+  def __init__(i,name=None,items=[]):
+    super(Sym,i).__init__(name=name)
+    i.n,i.counts,i.most,i.mode=0,{},0,None
+    i._report=None
+    i.items=items
+  def clone(i):
+    return Sym(name=i.name,items=i.items)
+  def ako(i): return ['syms','indep']
+  def log(i,x):
+    i.n += 1
+    n= i.counts[x] = i.counts.get(x,0) + 1
+    if n > i.most:
+      i.most, i.mode = n, x
+    return x
+  def any(i):
+    return any(i.counts.keys())
+  def has(i):
+    if i._report == None: i._report = i.report()
+    return i._report
+  def report(i):
+    lst = [(v/i.n,k) for k,v in i.counts.items()]
+    i._report = sorted(lst,reverse=True)
+    
+class Klass(Sym):
+  def ako(i): return ['syms','depen']
+
+class Cache():
+  "Keep a random sample of stuff seen so far."
+  def __init__(i,inits=[]):
+    i._lst,i.n,i._report = [],0,None
+    map(i.__iadd__,inits)
+  def __iadd__(i,x): 
+    if x == None: return x 
+    i.n += 1
+    changed = False
+    if len(i._lst) < The.cache.keep: # not full
+      changed = True
+      i._lst += [x]               # then add
+    else: # otherwise, maybe replace an old item
+      if rand() <= The.cache.keep/i.n:
+        changed = True
+        i._lst[int(rand()*The.cache.keep)] = x
+    if changed:      
+      i._report = None
+    return i
+  def any(i):  
+    return  any(i._lst)
+  def has(i):
+    if i._report == None: i._report = i.report()
+    return i._report
+  def norm(i,x):
+    lo, hi = i.has().lo, i.has().hi
+    return (x - lo) / (hi - lo + 0.00001)
+  def report():
+    i._lst = sorted(i._lst)
+    n   = len(lst)     
+    return o(
+      median= median(i._lst),
+      iqr = i._lst[int(n*.75)] - i._lst[int(n*.5)],
+      lo  = i._lst[0], 
+      hi  = i._lst[-1])
+
+def median(lst):
+  n = len(lst)
+  p = n // 2
+  if (n % 2):  return lst[p]
+  q = p + 1
+  q = max(0,(min(q,n)))
+  return (lst[p] + lst[q])/2
+
+class Table(o):
+  def __init__(i,header=[],data=[]):
+    i.cols  = i.headers(header)
+    i._data = map(i.log, data)
+    i.header = header
+  def headers(i,header):
+    d = o(all = [])
+    for c,h in enumerate(header):
+      h.col = c
+      d["all"] += [h]
+      for ako in h.ako():
+        d[ako]  = d.has().get(ako,[]) + [h]
+    return d
+  def clone(i): 
+    header = [h.clone() for h in i.cols.all]
+    return Table(header=header)
+  def log(i,row):
+    return [h.log(row[h.col]) for h in i.cols.all]
+  def __iadd__(i,row):
+    i._data += [i.log(row)]
+    return i
+  def any(i):
+    out = [None]* len(i.cols.all)
+    for h in i.cols.indep:
+      out[h.col] =  h.any()
+    return out
+
+class Lh(Sym):
+  def __init__(i,name=None):
+    super(Lh,i).__init__(name=name,
+                         items=[1,2,3,4,5,6])
 def nasa93():
   vl=1;l=2;n=3;h=4;vh=5;xh=6
   return Table(
-    sfem  = 21,
-    kloc  = 22,
-    klass = 23,
-    names = [ 
+    header = [ 
      # 0..8
-     'Prec', 'Flex', 'Resl', 'Team', 'Pmat', 'rely', 'data', 'cplx', 'ruse',
-     # 9 .. 17
-     'docu', 'time', 'stor', 'pvol', 'acap', 'pcap', 'pcon', 'aexp', 'plex',  
-     # 18 .. 25
-     'ltex', 'tool', 'site', 'sced', 'kloc', 'effort', '?defects', '?months'],
-    _data=[
+     Lh('Prec'), Lh('Flex'), Lh('Resl'), Lh('Team'),  
+     Lh('Pmat'), Lh('rely'), Lh('data'), Lh('cplx'),  
+     Lh('ruse'), Lh('docu'), Lh('time'), Lh('stor'),  
+     Lh('pvol'), Lh('acap'), Lh('pcap'), Lh('pcon'),  
+     Lh('aexp'), Lh('plex'), Lh('ltex'), Lh('tool'),  
+     Lh('site'), Lh('sced'), Num('kloc'),Less('effort'),  
+     Skip(Less('defects')),  Skip(Less('months'))
+    ],
+    data=[
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,25.9,117.6,808,15.3],
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,24.6,117.6,767,15.0],
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,7.7,31.2,240,10.1],
@@ -222,5 +341,8 @@ def nasa93():
 
 
 
-nasa93().show()
+print nasa93().any()
+print "why the ignored filled in"
+
+
 if __name__ == '__main__': eval(cmd())

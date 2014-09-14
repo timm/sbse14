@@ -4,11 +4,9 @@ from o import *
 
 The = o(cache = o(keep=256,
                   update=1.1),
+        cluster=o(using= lambda tbl: tbl.cols.indep),
         misc= o(missing='?',
-                fred=1,
-                jane=2,
-                maths=o(ll=1,
-                        mm=3),
+                nervous= True,
                 _logo= """
         _.._.-..-._
      .-'  .'  /\  \`._
@@ -25,5 +23,5 @@ The = o(cache = o(keep=256,
 
  DeadAnt (c) 2014, Tim Menzies
  Tabu-based ant colony optimizer.
- """
+ """))
 

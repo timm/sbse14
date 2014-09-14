@@ -1,10 +1,15 @@
 from __future__ import division
-import re
-sys.dont_write_bytecode = True
 from lib import *
+sys.dont_write_bytecode = True
 from table import *
 
+class SchafferF1(Less):
+  def f(i,row): return row[0]**2 
+class SchafferF2(Less):
+  def f(i,row): return (row[0]-2)**2 
+
 class Lh(Sym):
+  Ako["lh"] = lambda:Sym
   def __init__(i,name=None):
     super(Lh,i).__init__(name=name,
                          items=[1,2,3,4,5,6])
@@ -13,14 +18,13 @@ def nasa93():
   vl=1;l=2;n=3;h=4;vh=5;xh=6
   return Table(
     header = [ 
-     # 0..8
-     Lh('Prec'), Lh('Flex'), Lh('Resl'), Lh('Team'),  
-     Lh('Pmat'), Lh('rely'), Lh('data'), Lh('cplx'),  
-     Lh('ruse'), Lh('docu'), Lh('time'), Lh('stor'),  
-     Lh('pvol'), Lh('acap'), Lh('pcap'), Lh('pcon'),  
-     Lh('aexp'), Lh('plex'), Lh('ltex'), Lh('tool'),  
-     Lh('site'), Lh('sced'), Num('kloc'),Less('effort'),  
-     Skip(Less('defects')),  Skip(Less('months'))
+     'lh:Prec', ':Flex',  ':Resl', ':Team',  
+     ':Pmat',   ':rely', ':data', ':cplx',  
+     ':ruse',   ':docu', ':time', ':stor',  
+     ':pvol',   ':acap', ':pcap', ':pcon',  
+     ':aexp', ':plex',  'lh:ltex', ':tool',  
+     ':site',   ':sced', '$:kloc',  '<:effort',  
+     '?:<:defects',  '?:<:months'
     ],
     data=[
 	[h,h,h,vh,h,h,l,h,n,n,n,n,l,n,n,n,n,n,h,n,n,l,25.9,117.6,808,15.3],
@@ -118,4 +122,21 @@ def nasa93():
 	[h,h,h,vh,n,h,n,vh,n,n,vh,vh,h,n,n,n,n,l,l,n,n,n,  3.0, 38,231,12.0]	
   ])
 
+def _dist():
+  tbl=nasa93()
+  for n1,row1 in enumerate(tbl._data):
+    tmp = []
+    for n2,row2 in enumerate(tbl._data):
+      if n2 > n1:
+        tmp += [(dist(tbl,row1,row2),row1,row2)]
+    best = sorted(tmp)[0]
+    print best[1]
+    print best[2]
+    exit()
+
+def _any():
+  tbl = nasa93()
+  print tbl.any()
+
+if __name__ == '__main__': eval(cmd())
 

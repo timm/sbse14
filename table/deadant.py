@@ -1,9 +1,8 @@
 from __future__ import division
-import re,sys,random
-sys.dont_write_bytecode = True
 from lib import *
+sys.dont_write_bytecode = True
 from table import *
-
+from data import *
 
 class Close():
   big, tiny = 20, 0.05
@@ -30,10 +29,6 @@ def _close():
          if c.keep(rand())]
   print sum(lst)/n
 
-
-
 print nasa93().any()
-print "why the ignored filled in"
-
 
 if __name__ == '__main__': eval(cmd())

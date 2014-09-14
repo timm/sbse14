@@ -1,13 +1,14 @@
 from __future__ import division
-import sys
+import sys,random,re
 sys.dont_write_bytecode = True
+
 from o import *
-from the import *
+from settings import *
 
 def pretty(d, indent=0):
   for key, value in d.items():
     if key[0] != "_":
-      print '    ' * indent + str(key)
+      print '    ' * indent +':'+str(key)
       if isinstance(value, (dict,o)):
          pretty(value, indent+1)
       else:
@@ -28,7 +29,7 @@ def median(lst):
   q = max(0,(min(q,n)))
   return (lst[p] + lst[q])/2
 
-def cmd(com="say(logo)"):
+def cmd(com="say(The.misc._logo)"):
   "Convert command line to a function call."
   if len(sys.argv) < 2: return com
   def strp(x): return isinstance(x,basestring)
@@ -42,4 +43,4 @@ def cmd(com="say(logo)"):
   words = map(pair, sys.argv[2:])
   return sys.argv[1]+'(**dict('+ ','.join(words)+'))'
 
-
+if __name__ == "__main__": eval(cmd())

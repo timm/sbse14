@@ -170,7 +170,7 @@ class Model:
     def bettered():
       return not same and betterMed
     out = False
-    for n,(new,old) in enumerate(zip(news.log.y, olds.log.y)):
+    for new,old in zip(news.log.y, olds.log.y):
       betterMed, same, betterIqr = new.better(old)
       if worsed()  : return False # never any worsed
       if bettered(): out= out or True # at least one bettered
